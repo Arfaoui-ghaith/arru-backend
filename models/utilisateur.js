@@ -1,5 +1,5 @@
 'use strict';
-var validator = require('validator');
+const validator = require('validator');
 const AppError = require('./../utils/appError');
 
 const {
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: {msg: 'cin must be unique'},
       validate: {
         is(value){
-          if (!validator.isNumeric(value) && value.length === 8) {
+          if (!(validator.isNumeric(value) && value.length === 8)) {
             throw new Error('Please cin must contains only 8 chiffres!');
           }
         }
@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       isAlpha: true,
       validate: {
         is(value){
-          if (!validator.isAlpha(value)) {
+          if (!value.match(/^[A-Za-z ]+$/)) {
             throw new Error('Please nom must contains only letters!');
           }
         }
@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         is(value){
-          if (!validator.isAlpha(value)) {
+          if (!value.match(/^[A-Za-z ]+$/)) {
             throw new Error('Please prenom must contains only letters!');
           }
         }
@@ -78,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         is(value){
           if (!validator.isNumeric(value)) {
-            throw new Error('Please provide a valid email!');
+            throw new Error('Please provide a valid phone!');
           }
         }
       }

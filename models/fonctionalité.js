@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: {msg: "fonctionalité titre must be unique"},
       validate: {
         is(value){
-          if (!validator.isAlpha(value)) {
+          if (!value.match(/^[A-Za-z0-9 ]+$/)) {
             throw new Error('Please role titre must contains only letters!');
           }
         }

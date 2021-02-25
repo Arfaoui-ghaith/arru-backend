@@ -37,7 +37,11 @@ exports.consulter_role = catchAsync(async (req, res, next) => {
 
 exports.ajout_role = catchAsync(async (req, res, next) => {
 
+    console.log({id: uuidv4(), ...req.body});
+
     const nouveau_role = await models.Role.create({id: uuidv4(), ...req.body});
+
+    console.log(nouveau_role);
   
     if(!nouveau_role){
        return next(new AppError('Invalid fields or duplicate role', 401));

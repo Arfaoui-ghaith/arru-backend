@@ -1,4 +1,5 @@
 'use strict';
+const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -23,10 +24,24 @@ module.exports = (sequelize, DataTypes) => {
     fonctionalite_id: {
       type: DataTypes.UUID,
       allowNull: false,
+      validate: {
+        is(value){
+          if(UUIDv4.validate(value)){
+            throw new Error('This request is rejected for invalid id!');
+          }
+        }
+      }
     },
     role_id: {
       type: DataTypes.UUID,
       allowNull: false,
+      validate: {
+        is(value){
+          if(UUIDv4.validate(value)){
+            throw new Error('This request is rejected for invalid id!');
+          }
+        }
+      }
     }
   }, {
     sequelize,

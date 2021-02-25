@@ -23,32 +23,28 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasMany(models.Roles_specifications, {
+        foreignKey: 'role_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Role.init({
     titre: {
       type: DataTypes.STRING,
+      unique: { msg: "Le titre de role doit être unique" },
       allowNull: false,
-      unique: {msg: "titre role must be unique"},
       validate: {
         is(value){
-          if (!validator.isAlpha(value)) {
+          if (!value.match(/^[A-Za-z ]+$/)) {
             throw new Error('Please role titre must contains only letters!');
           }
         }
       }
     },
-    specification: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is(value){
-          if (!validator.isAlphanumeric(value)) {
-            throw new Error('Please role specification must contains only letters!');
-          }
-        }
-      }
-    }
   }, {
     sequelize,
     modelName: 'Role',

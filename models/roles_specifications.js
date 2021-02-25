@@ -1,26 +1,26 @@
 'use strict';
+const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Utilisateures_roles extends Model {
+  class Roles_specifications extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Utilisateur, {
-        foreignKey: 'utilisateur_id'
-      });
-
       this.belongsTo(models.Role, {
         foreignKey: 'role_id'
       });
+      this.belongsTo(models.Specification, {
+        foreignKey: 'specification_id'
+      });
     }
   };
-  Utilisateures_roles.init({
-    utilisateur_id: {
+  Roles_specifications.init({
+    role_id: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    role_id: {
+    specification_id: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
@@ -44,8 +44,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Utilisateures_roles',
-    tableName: 'utilisateures_roles'
+    modelName: 'Roles_specifications',
+    tableName: 'roles_specifications'
   });
-  return Utilisateures_roles;
+  return Roles_specifications;
 };
