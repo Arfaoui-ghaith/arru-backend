@@ -10,7 +10,7 @@ module.exports = {
       },
       titre: {
         type: Sequelize.STRING,
-        unique: { msg: "Le titre de specification doit être unique" },
+        unique: true,
         allowNull: false,
       },
       createdAt: {

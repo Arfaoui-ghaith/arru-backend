@@ -36,12 +36,12 @@ exports.consulter_utilisateur_role = catchAsync(async (req, res, next) => {
 
 });
 
-exports.ajout_fonctionalite_role = catchAsync(async (req, res, next) => {
+exports.ajout_utilisateur_role = catchAsync(async (req, res, next) => {
 
     const nouveau_utilisateur_role = await models.Utilisateures_roles.create({id: uuidv4(), ...req.body});
   
-    if(!nouveau_fonctionalite){
-       return next(new AppError('Invalid fields or duplicate fonctionalite_role', 401));
+    if(!nouveau_utilisateur_role){
+       return next(new AppError('Invalid fields or duplicate utilisateur_role', 401));
     }
   
     res.status(201).json({
@@ -67,7 +67,7 @@ exports.modifier_utilisateur_role = catchAsync(async(req, res, next) => {
 
 exports.supprimer_utilisateures_roles = catchAsync(async(req, res, next) => {
 
-    const utilisateur_role = await models.Fonctionalité.destroy({ where: { id: req.params.id } });
+    const utilisateur_role = await models.Utilisateures_roles.destroy({ where: { id: req.params.id } });
   
     if(!utilisateur_role){
        return next(new AppError('Invalid fields or No utilisateur_role found with this ID', 404));

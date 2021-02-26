@@ -19,18 +19,18 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Specification.init({
-    titre: DataTypes.STRING,
-    unique: { msg: "Le titre de specification doit être unique" },
+    titre: { 
+    type: DataTypes.STRING,
+    unique: { msg: 'Le titre de specification doit être unique' },
     allowNull: false,
     validate: {
       is(value){
-        
         if (!value.match(/^[A-Za-z ]+$/)) {
           throw new Error('La specification doit contenir seulement des lettres.');
           }
-        
+        }
       }
-    }
+    },
   }, {
     sequelize,
     modelName: 'Specification',

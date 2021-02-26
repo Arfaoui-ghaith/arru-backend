@@ -57,12 +57,29 @@ const sendErrorProd = (err, req, res) => {
       });
     }
 
+    if (err.name === 'SequelizeForeignKeyConstraintError'){
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: 'This request is rejected for invalid id!',
+      });
+    }
+
+    if({...err}.errors !== undefined ) {
+      if({...err}.errors[0].type.startsWith('notNull')) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: {...err}.errors[0].path+' est obligatoire.',
+      });
+      }
+    }
+
     if(err.name.startsWith('Sequelize')) {
       
       return res.status(err.statusCode).json({
         status: err.status,
-        message: {...err}.errors[0].message,
+        message: {...err}.errors[1].message,
       });
+
     }
     // B) Programming or other unknown error: don't leak error details
     // 1) Log error
@@ -107,8 +124,8 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError')
-      error = handleValidationErrorDB(error);
+    /*if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error);*/
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
 

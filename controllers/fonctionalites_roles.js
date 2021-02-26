@@ -14,8 +14,8 @@ exports.consulter_tous_les_fonctionalites_roles = catchAsync(async (req, res, ne
   
     res.status(200).json({
         status: 'success',
-        results: fonctionalites.length,
-        fonctionalites
+        results: fonctionalites_roles.length,
+        fonctionalites_roles
     });
     
 });
@@ -66,7 +66,7 @@ exports.modifier_fonctionalite_role = catchAsync(async(req, res, next) => {
 
 exports.supprimer_fonctionalite_role = catchAsync(async(req, res, next) => {
 
-    const fonctionalite = await models.Fonctionalité.destroy({ where: { id: req.params.id } });
+    const fonctionalite = await models.Roles_fonctionalités.destroy({ where: { id: req.params.id } });
   
     if(!fonctionalite){
        return next(new AppError('Invalid fields or No fonctionalite_role found with this ID', 404));

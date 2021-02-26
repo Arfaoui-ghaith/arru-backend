@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const { QueryTypes } = require('sequelize');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const bcrypt = require('bcryptjs');
 
 exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
 
@@ -34,7 +35,12 @@ exports.consulter_utilisateur = catchAsync(async (req, res, next) => {
 
 exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
 
-    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(),...req.body});
+    if(req.body.password){
+        const password = await bcrypt.hash(req.body.password, 12);
+        req.body.password = password;
+    }
+
+    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(),...req.body });
   
     if(!nouveau_utlisateur){
        return next(new AppError('Invalid fields or duplicate user', 401));
@@ -47,6 +53,11 @@ exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
 });
 
 exports.modifier_utilisateur = catchAsync(async(req, res, next) => {
+
+    if(req.body.password){
+        const password = await bcrypt.hash(req.body.password, 12);
+        req.body.password = password;
+    }
 
     const utlisateur = await models.Utilisateur.update(req.body, { where: { id: req.params.id } });
   

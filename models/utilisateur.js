@@ -77,8 +77,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       validate: {
         is(value){
+          if(value !== undefined){
           if (!validator.isNumeric(value)) {
             throw new Error('Please provide a valid phone!');
+            }
           }
         }
       }

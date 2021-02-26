@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         is(value){
-          if(UUIDv4.validate(value)){
+          if(!UUIDv4.validate(value)){
             throw new Error('This request is rejected for invalid id!');
           }
         }
@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         is(value){
-          if(UUIDv4.validate(value)){
+          if(!UUIDv4.validate(value)){
             throw new Error('This request is rejected for invalid id!');
           }
         }

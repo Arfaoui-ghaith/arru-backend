@@ -4,10 +4,16 @@ const app = express();
 const AppError = require('./utils/appError');
 const utilisateurRouter = require('./routes/utilisateurRoutes');
 const roleRouter = require('./routes/roleRoutes');
-const globalErrorHandler = require('./controllers/errorController.js');
+const fonctionaliteRouter = require('./routes/fonctionaliteRoutes');
+const specificationRouter = require('./routes/specificationRoutes');
+const role_fonctionaliteRouter = require('./routes/role_fonctionaliteRoutes');
+const role_specificationRouter = require('./routes/roles_specificationsRoutes');
+const utilisateur_roleRouter = require('./routes/utilisateur_roleRoutes');
 
+const globalErrorHandler = require('./controllers/errorController.js');
+const morgan = require('morgan');
 if (process.env.NODE_ENV === 'development') {
-    //app.use(morgan('dev'));
+    app.use(morgan('dev'));
 }
 
 app.use(express.json({ limit: '10kb' }));
@@ -15,6 +21,11 @@ app.use(express.json({ limit: '10kb' }));
 
 app.use('/api/v1/utilisateurs', utilisateurRouter);
 app.use('/api/v1/roles', roleRouter);
+app.use('/api/v1/fonctionalites', fonctionaliteRouter);
+app.use('/api/v1/specifications', specificationRouter);
+app.use('/api/v1/roles_fonctionalites', role_fonctionaliteRouter);
+app.use('/api/v1/roles_specifications', role_specificationRouter);
+app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 
 
 app.all('/test', (req, res, next) => {
