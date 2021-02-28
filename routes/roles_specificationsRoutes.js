@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const role_specificationController = require('../controllers/roles_specifications');
+const authController = require('./../controllers/authController');
 
+router.use(authController.protect);
 
 router.route('/')
     .get(role_specificationController.consulter_tous_les_roles_specifications)

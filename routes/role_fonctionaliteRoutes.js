@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const role_fonctionaliteController = require('./../controllers/fonctionalites_roles');
+const authController = require('./../controllers/authController');
 
+router.use(authController.protect);
 
 router.route('/')
     .get(role_fonctionaliteController.consulter_tous_les_fonctionalites_roles)

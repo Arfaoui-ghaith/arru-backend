@@ -1,6 +1,6 @@
 const models = require('./../models/index');
 const { v4: uuidv4 } = require('uuid');
-const { QueryTypes } = require('sequelize');
+
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const bcrypt = require('bcryptjs');
@@ -40,7 +40,7 @@ exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
         req.body.password = password;
     }
 
-    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(),...req.body });
+    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(), ...req.body });
   
     if(!nouveau_utlisateur){
        return next(new AppError('Invalid fields or duplicate user', 401));
@@ -60,6 +60,29 @@ exports.modifier_utilisateur = catchAsync(async(req, res, next) => {
     }
 
     const utlisateur = await models.Utilisateur.update(req.body, { where: { id: req.params.id } });
+  
+    if(!utlisateur){
+       return next(new AppError('Invalid fields or No user found with this ID', 404));
+    }
+  
+    res.status(203).json({
+        status: 'success',
+    });
+    
+});
+
+exports.modifier_profile = catchAsync(async(req, res, next) => {
+
+    if(req.file.filename){
+        req.body.image = req.file.filename;
+    }
+
+    if(req.body.password){
+        const password = await bcrypt.hash(req.body.password, 12);
+        req.body.password = password;
+    }
+
+    const utlisateur = await models.Utilisateur.update(req.body, { where: { id: req.user.id } });
   
     if(!utlisateur){
        return next(new AppError('Invalid fields or No user found with this ID', 404));

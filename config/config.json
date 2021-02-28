@@ -2,21 +2,21 @@
   "development": {
     "username": "admin",
     "password": "admin123",
-    "database": "arru",
+    "database": "arrudb",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "admin",
     "password": "admin123",
-    "database": "arru",
+    "database": "arrudb",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "admin",
     "password": "admin123",
-    "database": "arru",
+    "database": "arrudb",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }

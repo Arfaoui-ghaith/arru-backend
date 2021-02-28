@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const specificationController = require('./../controllers/specfications');
+const authController = require('./../controllers/authController');
 
+router.use(authController.protect);
 
 router.route('/')
     .get(specificationController.consulter_tous_les_specifications)

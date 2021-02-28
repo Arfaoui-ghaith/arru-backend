@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(express.json({ limit: '10kb' }));
-
+app.use(express.static(`${__dirname}/storage`));
 
 app.use('/api/v1/utilisateurs', utilisateurRouter);
 app.use('/api/v1/roles', roleRouter);
