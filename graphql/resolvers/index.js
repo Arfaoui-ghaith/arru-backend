@@ -1,10 +1,10 @@
-const userResolvers = require('./users');
+const resolvers = require('./../../controllers/utilisateurs');
 
 module.exports = {
     Query: {
-        ...userResolvers.Query,
+        ...resolvers.utilisateurResolvers.Query,
     },
-    Mutation: {
-        ...userResolvers.Mutation,
-    },
+    Subscription: {
+        ...resolvers.utilisateurResolvers.Subscription
+    }
 }

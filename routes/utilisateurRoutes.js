@@ -5,8 +5,10 @@ const utilisateurController = require('./../controllers/utilisateurs.js');
 const authController = require('./../controllers/authController');
 const imageEditAndSave = require('./../utils/imageEditAndSave');
 
-router.route('/login')
-    .post(authController.login);
+router.route('/login').post(authController.login);
+
+router.route('/forgotPassword').post(authController.forgotPassword);
+router.route('/resetPassword').post(authController.resetPassword);
 
 router.use(authController.protect);
 

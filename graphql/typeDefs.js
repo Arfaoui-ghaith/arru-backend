@@ -21,6 +21,9 @@ const dateScalar = new GraphQLScalarType({
 
 module.exports = gql`
 scalar dateScalar
+type Role {
+    titre: String!
+}
 type User {
     id: String!
     nom: String!
@@ -28,19 +31,14 @@ type User {
     cin: String!
     email: String!
     password: String!
+    roles: [Role]
     createdAt: dateScalar
     updatedAt: dateScalar
     token: String
 }
 type Query {
-    users: [User]!
+    utilisateurs: [User]!
 }
-type Mutation {
-    addUser(
-        nom: String!
-        prenom: String!
-        cin: String!
-        email: String!
-        password: String!
-    ): User!
+type Subscription {
+    utilisateurs: [User]
 }`

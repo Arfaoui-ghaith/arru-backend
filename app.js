@@ -12,8 +12,9 @@ const utilisateur_roleRouter = require('./routes/utilisateur_roleRoutes');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const morgan = require('morgan');
+
 if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
+    //app.use(morgan('dev'));
 }
 
 app.use(express.json({ limit: '10kb' }));
@@ -28,9 +29,9 @@ app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 
 
-app.all('/test', (req, res, next) => {
+/*app.all('/test', (req, res, next) => {
     
-    /*try{
+        try{
         const user = await models.Utilisateur.create({id: uuidv4(), cin: "07490408", nom: "ghaith", prenom: "arfaoui", email:"ghaith@gmail.com", password: "admin123", telephone: "51927300"});
         console.log(user);*/
 
@@ -54,10 +55,10 @@ app.all('/test', (req, res, next) => {
         res.send("hello");
     }catch(err){
         console.log(err);
-    }*/
+    }
     if (req.originalUrl === "/graphql") next();
     next(new AppError(`can't find ${req.originalUrl}`, 404).message);
-});
+});*/
 
 app.use(globalErrorHandler);
 
