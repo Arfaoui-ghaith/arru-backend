@@ -46,18 +46,43 @@ exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
 });
 
 exports.consulter_utilisateur = catchAsync(async (req, res, next) => {
-    const utilisateur = await models.Utilisateur.findByPk(req.params.id);
-  
-    if(!utilisateur){
-      return next(new AppError('No user with this ID.',404));
-    }
 
-    pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
-   
-   res.status(200).json({
-      status: 'success',
-      utilisateur
-   });
+    const utilisateur = await models.Utilisateur.findByPk(req.params.id);
+
+    if(!utilisateur){
+        return next(new AppError('No user with this ID.',404));
+      }
+
+    const roles = await models.sequelize.query("SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
+    { 
+        replacements: { utilisateur: utilisateur.id },
+        type: models.sequelize.QueryTypes.SELECT 
+    });
+    
+    
+
+    var roles_specifications = [];
+    let obj = {id: utilisateur.id, nom: utilisateur.nom, prenom: utilisateur.prenom, cin: utilisateur.cin, email: utilisateur.email, image: utilisateur.image, telephone: utilisateur.telephone};
+    roles.forEach( async (role,index) => {
+    
+    let specification = await models.sequelize.query("SELECT s.titre FROM `roles` as r, `roles_specifications` as rs, `specifications` as s WHERE r.id = :role AND r.id = rs.role_id AND rs.specification_id = s.id",
+    { 
+        replacements: { role: role.id || "" },
+        type: models.sequelize.QueryTypes.SELECT 
+    });
+
+        role.specification = specification
+        roles_specifications.push(role);
+
+        if(index >= (roles.length - 1)){
+            obj.roles = {...roles_specifications};
+            res.status(200).json({
+                status: 'success',
+                utilisateur: obj
+            });
+        }
+
+    });
 });
 
 exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
@@ -73,7 +98,7 @@ exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
        return next(new AppError('Invalid fields or duplicate user', 401));
     }
 
-    pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
+    pubsub.publish('UTILISATEURS', { utilisateurs: await recall.findAllUsers() });
   
     res.status(201).json({
         status: 'success',
@@ -145,15 +170,9 @@ exports.supprimer_utilisateur = catchAsync(async(req, res, next) => {
 
 exports.utilisateurResolvers = {
     Query: {
-      utilisateurs: async (_, __,{user}) => {
+      utilisateurs: async (_, __,{id}) => {
         
       try{
-
-        if(!user){
-          throw new AppError('You are not logged In ! Please log in to get access.',401);
-        }else {
-          models.Utilisateur.findByPk(user.payload.id).then((user) => console.log(user)).catch((err) => {throw new AppError('The user belonging to this token does not exist.',401);});
-        }
         
         const utilisateurs = await models.Utilisateur.findAll();
 
@@ -163,7 +182,7 @@ exports.utilisateurResolvers = {
           let obj = {id: user.id, nom: user.nom, prenom: user.prenom, cin: user.cin, email: user.email, image: user.image, telephone: user.telephone};
           const roles = await models.sequelize.query("SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
           { 
-              replacements: { utilisateur: user.id },
+              replacements: { utilisateur: id },
               type: models.sequelize.QueryTypes.SELECT 
           });
 
@@ -183,7 +202,24 @@ exports.utilisateurResolvers = {
     },
     Subscription: {
         utilisateurs: {
-          subscribe: () => pubsub.asyncIterator(['UTILISATEURS'])
+            subscribe: async (_,__,{id}) => {
+
+                const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }
+
+                return pubsub.asyncIterator(['UTILISATEURS']);
+            }
         }
     }
 }
+

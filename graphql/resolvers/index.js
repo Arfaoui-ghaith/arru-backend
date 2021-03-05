@@ -1,10 +1,11 @@
-const resolvers = require('./../../controllers/utilisateurs');
-
+const utilisateurs = require('./../../controllers/utilisateurs');
+const roles = require('./../../controllers/roles');
 module.exports = {
     Query: {
-        ...resolvers.utilisateurResolvers.Query,
+        ...utilisateurs.utilisateurResolvers.Query,
     },
     Subscription: {
-        ...resolvers.utilisateurResolvers.Subscription
+        ...utilisateurs.utilisateurResolvers.Subscription,
+        ...roles.rolesResolvers.Subscription
     }
 }

@@ -20,7 +20,17 @@ const resolvers = require('./graphql/resolvers/index');
 const apollo = new ApolloServer({
     typeDefs, 
     resolvers,
-    //context: contextMiddleware,
+    subscriptions: {
+      onConnect: (connectionParams, webSocket, context) => {
+        return {
+          user: connectionParams.Authorization
+        }
+      },
+      onDisconnect: (webSocket, context) => {
+        console.log('Disconnected!')
+      },
+    },
+    context: contextMiddleware,
 });
 
 apollo.applyMiddleware({ app });

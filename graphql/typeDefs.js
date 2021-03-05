@@ -21,8 +21,17 @@ const dateScalar = new GraphQLScalarType({
 
 module.exports = gql`
 scalar dateScalar
-type Role {
+type Fonctionalite {
     titre: String!
+}
+type Specification {
+    titre: String!
+}
+type Role {
+    id: String!
+    titre: String
+    specification: [Specification]
+    fonctionalites: [Fonctionalite]
 }
 type User {
     id: String!
@@ -41,4 +50,5 @@ type Query {
 }
 type Subscription {
     utilisateurs: [User]
+    roles: [Role]
 }`
