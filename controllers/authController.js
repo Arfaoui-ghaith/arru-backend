@@ -14,7 +14,8 @@ const signToken = (utilisateur) => {
         prenom: utilisateur.prenom, 
         email: utilisateur.email, 
         telephone: utilisateur.telephone, 
-        image: utilisateur.image} }, process.env.JWT_SECRET, {
+        image: utilisateur.image,
+        roles: utilisateur.roles } }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
@@ -34,8 +35,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    
-    
+    console.log(decoded);
+
     const freshUser = await models.Utilisateur.findByPk(decoded.payload.id);
 
     if (!freshUser) {
@@ -72,72 +73,82 @@ exports.restrictTo = (fonctionalite) => {
 };
 
 exports.login = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
   
-    if (!email) {
-        return next(
-            new AppError('Please provide a email!', 400)
-        );
-    }else if(!password) {
-        return next(
-            new AppError('Please provide a password!', 400)
-        );
-    }
+  if (!email) {
+      return next(
+          new AppError('Please provide a email!', 400)
+      );
+  }else if(!password) {
+      return next(
+          new AppError('Please provide a password!', 400)
+      );
+  }
   
-    const utilisateur = await models.Utilisateur.findOne({ where: { email } });
+  const utilisateur = await models.Utilisateur.findOne({ where: { email } });
   
-    if (!utilisateur) {
-        return next(new AppError('Incorrect email! please try again.', 401));
-    }else if (!(await bcrypt.compare(password, utilisateur.password))){
-        return next(new AppError('Incorrect password! please try again.', 401));
-    }
+  if (!utilisateur) {
+      return next(new AppError('Incorrect email! please try again.', 401));
+  }else if (!(await bcrypt.compare(password, utilisateur.password))){
+      return next(new AppError('Incorrect password! please try again.', 401));
+  }
 
-    const token = signToken(utilisateur);
+  const roles = await models.sequelize.query(
+    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur "
+    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur ",
+    { 
+        replacements: { utilisateur: utilisateur.id },
+        type: models.sequelize.QueryTypes.SELECT
+    }
+  );
 
-    res.status(200).json({
-        status: 'success',
-        token
-    });
+  const utilisateurInfo = { id: utilisateur.id, cin: utilisateur.cin, nom: utilisateur.nom, prenom: utilisateur.prenom, email: utilisateur.email, telephone: utilisateur.telephone, image: utilisateur.image, roles }
+
+  const token = signToken(utilisateurInfo);
+
+  res.status(200).json({
+      status: 'success',
+      token
+  });
+
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-    console.log(req.body.email);
-    // 1) Get user based on Posted email address
-    const utilisateur = await models.Utilisateur.findOne({ where: { email: req.body.email } });
-    if (!utilisateur) {
-      return next(new AppError('There is no user with this email address.', 404));
-    }
-    // 2) Generate the random reset Token
-    const resetToken = jwt.sign({ payload: { id: utilisateur.id } }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+  console.log(req.body.email);
+  // 1) Get user based on Posted email address
+  const utilisateur = await models.Utilisateur.findOne({ where: { email: req.body.email } });
+  if (!utilisateur) {
+    return next(new AppError('There is no user with this email address.', 404));
+  }
+  // 2) Generate the random reset Token
+  const resetToken = jwt.sign({ payload: { id: utilisateur.id } }, process.env.JWT_SECRET, {
+    expiresIn: '1h',
+  });
     
-    // 3) Send it to user's email
+  // 3) Send it to user's email
   
-    try {
+  try {
 
-      const resetURL = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`;
+    const resetURL = `${req.protocol}://${req.get('host')}/resetPassword/${resetToken}`;
   
-      //await new Email(utilisateur, resetURL).sendPasswordReset();
+    //await new Email(utilisateur, resetURL).sendPasswordReset();
 
-      await sendEmail({
-        email: utilisateur.email,
-        subject: 'Hello from the other side !!',
-        message: resetURL
-      });
+    await sendEmail({
+      email: utilisateur.email,
+      subject: 'Hello from the other side !!',
+      message: resetURL
+    });
   
-      res.status(200).json({
-        status: 'success',
-        message: 'Token sent to email!',
-        resetToken
-      });
-      
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!',
+      resetToken
+    });
+
     } catch (err) {
-
       return next(
         new AppError('There was an error sending the email. Try again later.', 500)
       );
-
     }
 });
 

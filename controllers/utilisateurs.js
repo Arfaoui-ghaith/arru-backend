@@ -130,16 +130,52 @@ exports.modifier_utilisateur = catchAsync(async(req, res, next) => {
 
 exports.modifier_profile = catchAsync(async(req, res, next) => {
 
-    if(req.file.filename){
-        req.body.image = req.file.filename;
+    console.log("in modifierr!!",req.file);
+
+    if(req.file){
+        if(req.file.filename) {
+            req.body.image = req.file.filename;
+        }
     }
 
     if(req.body.password){
+        
         const password = await bcrypt.hash(req.body.password, 12);
         req.body.password = password;
     }
 
     const utlisateur = await models.Utilisateur.update(req.body, { where: { id: req.user.id } });
+  
+    if(!utlisateur){
+       return next(new AppError('Invalid fields or No user found with this ID', 404));
+    }
+
+    pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
+  
+    res.status(203).json({
+        status: 'success',
+    });
+    
+});
+
+exports.update_password = catchAsync(async(req, res, next) => {
+
+    if(req.body.currentPassword){
+        if (!(await bcrypt.compare(req.body.currentPassword, req.user.password))){
+            return next(new AppError('Incorrect current password! please try again.', 401));
+        }
+    } else {
+        return next(new AppError('you didnt tell us your current password! please try again.', 401));
+    }
+
+    if(req.body.password){
+        const password = await bcrypt.hash(req.body.password, 12);
+        req.body.password = password;
+    }else{
+        return next(new AppError('you didnt tell us your new password! please try again.', 401));
+    }
+
+    const utlisateur = await models.Utilisateur.update({ password: req.body.password }, { where: { id: req.user.id } });
   
     if(!utlisateur){
        return next(new AppError('Invalid fields or No user found with this ID', 404));

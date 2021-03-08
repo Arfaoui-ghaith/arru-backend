@@ -37,6 +37,8 @@ exports.consulter_fonctionalite_role = catchAsync(async (req, res, next) => {
 
 exports.ajout_fonctionalite_role = catchAsync(async (req, res, next) => {
 
+    if(!req.role || !req.fonctionalites){
+
     const nouveau_fonctionalite = await models.Roles_fonctionalités.create({id: uuidv4(), ...req.body});
   
     if(!nouveau_fonctionalite){
@@ -47,6 +49,16 @@ exports.ajout_fonctionalite_role = catchAsync(async (req, res, next) => {
         status: 'success',
         nouveau_fonctionalite
     });
+    
+    } else {
+        req.fonctionalites.forEach( async (fonctionalite, index) => {
+            let fonctionalite_role = await models.Roles_fonctionalités.create({id: uuidv4(), role_id: req.role.id, fonctionalite_id: fonctionalite});
+        });
+
+        res.status(201).json({
+            status: 'success',
+        });
+    }
 
 });
 

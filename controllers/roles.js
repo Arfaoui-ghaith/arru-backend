@@ -67,12 +67,20 @@ exports.ajout_role = catchAsync(async (req, res, next) => {
 
     console.log({id: uuidv4(), ...req.body});
 
-    const nouveau_role = await models.Role.create({id: uuidv4(), ...req.body});
+    const nouveau_role = await models.Role.create({id: uuidv4(), titre: req.body.titre});
 
     console.log(nouveau_role);
   
     if(!nouveau_role){
        return next(new AppError('Invalid fields or duplicate role', 401));
+    }
+
+    console.log("role : ",req.body.fonctionalites && req.body.fonctionalites.length > 0);
+    if(req.body.fonctionalites && req.body.fonctionalites.length > 0){
+        console.log('req.body.fonctionalites');
+        req.role = nouveau_role;
+        req.fonctionalites = req.body.fonctionalites;
+        return next();
     }
   
     res.status(201).json({
@@ -99,11 +107,15 @@ exports.modifier_role = catchAsync(async(req, res, next) => {
 
 exports.supprimer_role = catchAsync(async(req, res, next) => {
 
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+
     const role = await models.Role.destroy({ where: { id: req.params.id } });
   
     if(!role){
        return next(new AppError('Invalid fields or No role found with this ID', 404));
     }
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
   
     res.status(203).json({
         status: 'success',
