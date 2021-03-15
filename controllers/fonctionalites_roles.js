@@ -64,6 +64,10 @@ exports.ajout_fonctionalite_role = catchAsync(async (req, res, next) => {
 
 exports.modifier_fonctionalite_role = catchAsync(async(req, res, next) => {
 
+    if(req.relations){
+        req.body = req.relations;
+    }
+
     const fonctionalite_role = await models.Roles_fonctionalités.update(req.body, { where: { id: req.params.id } });
   
     if(!fonctionalite_role){

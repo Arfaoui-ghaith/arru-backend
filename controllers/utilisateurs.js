@@ -18,7 +18,7 @@ exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
     var users = []
     utilisateurs.forEach( async (user,index) => {
         let obj = {id: user.id, nom: user.nom, prenom: user.prenom, cin: user.cin, email: user.email, image: user.image, telephone: user.telephone};
-        const roles = await models.sequelize.query("SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
+        const roles = await models.sequelize.query("SELECT r.titre, (SELECT s.titre from `specifications` as s where ur.specification_id = s.id ) as specification FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
         { 
             replacements: { utilisateur: user.id },
             type: models.sequelize.QueryTypes.SELECT 
@@ -87,23 +87,36 @@ exports.consulter_utilisateur = catchAsync(async (req, res, next) => {
 
 exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
 
-    if(req.body.password){
-        const password = await bcrypt.hash(req.body.password, 12);
-        req.body.password = password;
+
+    if(req.body.utilisateur.password){
+        const password = await bcrypt.hash(req.body.utilisateur.password, 12);
+        req.body.utilisateur.password = password;
     }
 
-    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(), ...req.body });
+    const nouveau_utlisateur = await models.Utilisateur.create({id: uuidv4(), ...req.body.utilisateur });
+    console.log(req.body.relations);
+    if(req.body.relations){
+        let relations = [];
+		for(const relation of req.body.relations){
+			let obj = { id: uuidv4(), role_id: relation.role_id, specification_id: relation.specification_id !== undefined ? relation.specification_id : null, utilisateur_id: nouveau_utlisateur.id }
+			relations.push(obj);
+		}
+
+        models.Utilisateures_roles.bulkCreate(relations).then(async () => {
+            pubsub.publish('UTILISATEURS', { utilisateurs: await recall.findAllUsers() });
+
+            res.status(201).json({
+                status: 'success',
+                nouveau_utlisateur
+            });
+        }).catch((err) => console.log(err));
+    }else{
+        return next(new AppError('User must have at least one role', 401));
+    }
   
     if(!nouveau_utlisateur){
        return next(new AppError('Invalid fields or duplicate user', 401));
     }
-
-    pubsub.publish('UTILISATEURS', { utilisateurs: await recall.findAllUsers() });
-  
-    res.status(201).json({
-        status: 'success',
-        nouveau_utlisateur
-    });
 
 });
 
@@ -191,11 +204,15 @@ exports.update_password = catchAsync(async(req, res, next) => {
 
 exports.supprimer_utilisateur = catchAsync(async(req, res, next) => {
 
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+
     const utlisateur = await models.Utilisateur.destroy({ where: { id: req.params.id } });
   
     if(!utlisateur){
        return next(new AppError('Invalid fields or No user found with this ID', 404));
     }
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
   
     pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
 

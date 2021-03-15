@@ -94,13 +94,15 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   const roles = await models.sequelize.query(
-    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur "
+    "SELECT r.titre, (SELECT s.titre from `specifications` as s where ur.specification_id = s.id ) as specification FROM `roles` as r, `utilisateures_roles` as ur "
     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur ",
     { 
         replacements: { utilisateur: utilisateur.id },
         type: models.sequelize.QueryTypes.SELECT
     }
   );
+
+
 
   const utilisateurInfo = { id: utilisateur.id, cin: utilisateur.cin, nom: utilisateur.nom, prenom: utilisateur.prenom, email: utilisateur.email, telephone: utilisateur.telephone, image: utilisateur.image, roles }
 

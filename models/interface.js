@@ -3,43 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Role extends Model {
+  class Interface extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasMany(models.Utilisateures_roles, {
-        foreignKey: 'role_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-
-      this.hasMany(models.Roles_fonctionalités, {
-        foreignKey: 'role_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-
-      this.hasMany(models.Roles_specifications, {
-        foreignKey: 'role_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-
       this.hasMany(models.Roles_Interfaces, {
-        foreignKey: 'role_id',
+        foreignKey: 'interface_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
         hooks: true,
       });
     }
   };
-  Role.init({
+  Interface.init({
     titre: {
       type: DataTypes.STRING,
       unique: { msg: "Le titre de role doit être unique" },
@@ -54,8 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Role',
-    tableName: 'roles'
+    modelName: 'Interface',
+    tableName: 'interfaces'
   });
-  return Role;
+  return Interface;
 };

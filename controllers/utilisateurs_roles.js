@@ -78,3 +78,27 @@ exports.supprimer_utilisateures_roles = catchAsync(async(req, res, next) => {
     });
 
 });
+
+exports.creer_utilisateures_roles_relations = catchAsync(async(req, res, next) => {
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+
+    const delete_relations = await models.Utilisateures_roles.destroy({ where: { utilisateur_id: req.utilisateur_id } });
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+  
+    if(!delete_relations){
+       return next(new AppError('Invalid fields or No utilisateur_id found with this ID', 404));
+    }
+
+    const relations = await models.Utilisateures_roles.bulkCreate(req.relations, {returning: true});
+  
+    if(!relations){
+       return next(new AppError('No relations created', 404));
+    }
+  
+    res.status(203).json({
+        status: 'success',
+    });
+
+});

@@ -10,6 +10,7 @@ const specificationRouter = require('./routes/specificationRoutes');
 const role_fonctionaliteRouter = require('./routes/role_fonctionaliteRoutes');
 const role_specificationRouter = require('./routes/roles_specificationsRoutes');
 const utilisateur_roleRouter = require('./routes/utilisateur_roleRoutes');
+const interfaceRouter = require('./routes/interfacesRoutes');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const morgan = require('morgan');
@@ -22,6 +23,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.static(`${__dirname}/storage`));
 
 app.use('/api/v1/utilisateurs', utilisateurRouter);
+app.use('/api/v1/interfaces', interfaceRouter);
 app.use('/api/v1/roles', roleRouter);
 app.use('/api/v1/fonctionalites', fonctionaliteRouter);
 app.use('/api/v1/specifications', specificationRouter);
@@ -29,9 +31,7 @@ app.use('/api/v1/roles_fonctionalites', role_fonctionaliteRouter);
 app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 
-
 /*app.all('/test', (req, res, next) => {
-    
         try{
         const user = await models.Utilisateur.create({id: uuidv4(), cin: "07490408", nom: "ghaith", prenom: "arfaoui", email:"ghaith@gmail.com", password: "admin123", telephone: "51927300"});
         console.log(user);*/

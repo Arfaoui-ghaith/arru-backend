@@ -24,6 +24,9 @@ module.exports = {
           key: 'id'
         }
       },
+      specification_id: {
+        type: Sequelize.UUID,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

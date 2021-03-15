@@ -44,7 +44,7 @@ Array.prototype.findAllRolesDatails = async function() {
             type: models.sequelize.QueryTypes.SELECT 
         });
 
-        const fonctionalites = await models.sequelize.query("SELECT f.titre FROM `roles` as r, `roles_fonctionalités` as rf, `fonctionalités` as f WHERE r.id = :role AND r.id = rf.role_id AND rf.fonctionalite_id = f.id",
+        const fonctionalites = await models.sequelize.query("SELECT f.titre FROM `roles` as r, `roles_fonctionalites` as rf, `fonctionalites` as f WHERE r.id = :role AND r.id = rf.role_id AND rf.fonctionalite_id = f.id",
         { 
             replacements: { role: role.id },
             type: models.sequelize.QueryTypes.SELECT 

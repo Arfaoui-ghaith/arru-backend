@@ -13,8 +13,8 @@ router.route('/resetPassword').post(authController.resetPassword);
 router.use(authController.protect);
 
 router.route('/')
-    .get(authController.restrictTo('consulter tous les utilisateurs'), utilisateurController.consulter_tous_les_utilisateurs)
-    .post(authController.restrictTo('ajouter des utilisateurs'), utilisateurController.ajout_utilisateur);
+    .get(/*authController.restrictTo('consulter tous les utilisateurs'),*/ utilisateurController.consulter_tous_les_utilisateurs)
+    .post(/*authController.restrictTo('ajouter des utilisateurs'),*/ utilisateurController.ajout_utilisateur);
 
 router.route('/modifierProfile')
     .put(
@@ -26,8 +26,8 @@ router.route('/modifierMotDePasse')
     .put(utilisateurController.update_password);
 
 router.route('/:id')
-    .get(authController.restrictTo('consulter tous les utilisateurs'), utilisateurController.consulter_utilisateur)
-    .put(authController.restrictTo('modifier tous les utilisateurs'), utilisateurController.modifier_utilisateur)
-    .delete(authController.restrictTo('supprimer tous les utilisateurs'), utilisateurController.supprimer_utilisateur);
+    .get(/*authController.restrictTo('consulter tous les utilisateurs'),*/ utilisateurController.consulter_utilisateur)
+    .put(/*authController.restrictTo('modifier tous les utilisateurs'),*/ utilisateurController.modifier_utilisateur)
+    .delete(/*authController.restrictTo('supprimer tous les utilisateurs'),*/ utilisateurController.supprimer_utilisateur);
 
 module.exports = router;

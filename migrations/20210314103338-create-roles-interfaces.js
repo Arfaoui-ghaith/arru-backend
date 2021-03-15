@@ -1,26 +1,26 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('roles_fonctionalites', {
+    await queryInterface.createTable('roles_interfaces', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true,
       },
-      fonctionalite_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model: 'fonctionalites',
-          key: 'id'
-        }
-      },
       role_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'roles',
+          key: 'id'
+        }
+      },
+      interface_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'interfaces',
           key: 'id'
         }
       },
@@ -35,6 +35,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('roles_fonctionalites');
+    await queryInterface.dropTable('roles_interfaces');
   }
 };

@@ -4,7 +4,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Roles_fonctionalités extends Model {
+  class Roles_Interfaces extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -15,13 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'role_id'
       });
 
-      this.belongsTo(models.Fonctionalité, {
-        foreignKey: 'fonctionalite_id'
+      this.belongsTo(models.Interface, {
+        foreignKey: 'interface_id'
       });
     }
   };
-  Roles_fonctionalités.init({
-    fonctionalite_id: {
+  Roles_Interfaces.init({
+    interface_id: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
@@ -45,8 +45,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Roles_fonctionalités',
-    tableName: 'roles_fonctionalites'
+    modelName: 'Roles_Interfaces',
+    tableName: 'roles_interfaces'
   });
-  return Roles_fonctionalités;
+  return Roles_Interfaces;
 };

@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Role, {
         foreignKey: 'role_id'
       });
+
+      this.belongsTo(models.Specification, {
+        foreignKey: 'specification_id'
+      });
     }
   };
   Utilisateures_roles.init({
@@ -35,6 +39,16 @@ module.exports = (sequelize, DataTypes) => {
     role_id: {
       type: DataTypes.UUID,
       allowNull: false,
+      validate: {
+        is(value){
+          if(!UUIDv4.validate(value)){
+            throw new Error('This request is rejected for invalid id!');
+          }
+        }
+      }
+    },
+    specification_id: {
+      type: DataTypes.UUID,
       validate: {
         is(value){
           if(!UUIDv4.validate(value)){
