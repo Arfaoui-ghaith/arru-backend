@@ -10,7 +10,7 @@ router.use(authController.protect);
 
 router.route('/')
     .get(/*authController.restrictTo('consulter les roles'),*/ roleController.consulter_tous_les_roles)
-    .post(/*authController.restrictTo('ajouter des roles'),*/ roleController.ajout_role, fonctionalites_rolesController.ajout_fonctionalite_role);
+    .post(/*authController.restrictTo('ajouter des roles'),*/ roleController.ajout_role);
 
 router.route('/:id')
     .get(/*authController.restrictTo('consulter les roles'),*/ roleController.consulter_role)

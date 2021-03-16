@@ -32,9 +32,16 @@ exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
             replacements: { role: role.id },
             type: models.sequelize.QueryTypes.SELECT 
         });
+
+        const interfaces = await models.sequelize.query("SELECT i.id, i.titre FROM `roles` as r, `roles_interfaces` as ri, `interfaces` as i WHERE r.id = :role AND r.id = ri.role_id AND ri.interface_id = i.id",
+        { 
+            replacements: { role: role.id },
+            type: models.sequelize.QueryTypes.SELECT 
+        });
         
+        obj.interfaces = interfaces;
         obj.specification = specification;
-        obj.fonctionalites = fonctionalites
+        obj.fonctionalites = fonctionalites;
         roles_specifications_fonctionalites.push(obj);  
     }
     
@@ -75,12 +82,29 @@ exports.ajout_role = catchAsync(async (req, res, next) => {
        return next(new AppError('Invalid fields or duplicate role', 401));
     }
 
-    console.log("role : ",req.body.fonctionalites && req.body.fonctionalites.length > 0);
-    if(req.body.fonctionalites && req.body.fonctionalites.length > 0){
-        console.log('req.body.fonctionalites');
-        req.role = nouveau_role;
-        req.fonctionalites = req.body.fonctionalites;
-        return next();
+    if(req.body.relations.fonctionalites && req.body.relations.fonctionalites.length > 0){
+        
+        let relations = [];
+		for(const fonctionalite_id of req.body.relations.fonctionalites){
+			let obj = { id: uuidv4(), role_id: nouveau_role.id, fonctionalite_id }
+			relations.push(obj);
+		}
+        
+        console.log(relations)
+        models.Roles_fonctionalités.bulkCreate(relations).then(() => console.log("res")).catch((err) => console.log(err));
+
+    }
+
+    if(req.body.relations.interfaces && req.body.relations.interfaces.length > 0){
+        
+        let relations = [];
+		for(const interface_id of req.body.relations.interfaces){
+			let obj = { id: uuidv4(), role_id: nouveau_role.id, interface_id }
+			relations.push(obj);
+		}
+        
+        console.log(relations)
+        models.Roles_Interfaces.bulkCreate(relations).then(() => console.log("res")).catch((err) => console.log(err));
     }
   
     res.status(201).json({
@@ -92,10 +116,69 @@ exports.ajout_role = catchAsync(async (req, res, next) => {
 
 exports.modifier_role = catchAsync(async(req, res, next) => {
 
-    const role = await models.Role.update(req.body, { where: { id: req.params.id } });
+    const role = await models.Role.update({...req.body.role}, { where: { id: req.params.id } });
   
     if(!role){
        return next(new AppError('Invalid fields or No role found with this ID', 404));
+    }
+
+    console.log(role);
+
+    if(req.body.relations.fonctionalites){
+        
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        const d1 = await models.Roles_fonctionalités.destroy({ where: { role_id: req.params.id } });
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        
+        if(req.body.relations.fonctionalites.length > 0){
+            let relations = [];
+            for(const fonctionalite_id of req.body.relations.fonctionalites){
+                let obj = { id: uuidv4(), role_id: req.params.id, fonctionalite_id }
+                relations.push(obj);
+            }
+            
+            console.log(relations)
+            models.Roles_fonctionalités.bulkCreate(relations).then(() => console.log("res")).catch((err) => console.log(err));
+        }
+
+    }
+
+    if(req.body.relations.interfaces){
+        
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        const d2 = await models.Roles_Interfaces.destroy({ where: { role_id: req.params.id } });
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        
+        if(req.body.relations.interfaces.length > 0){
+            let relations = [];
+            for(const interface_id of req.body.relations.interfaces){
+                let obj = { id: uuidv4(), role_id: req.params.id, interface_id }
+                relations.push(obj);
+            }
+            
+            console.log(relations)
+            models.Roles_Interfaces.bulkCreate(relations).then(() => console.log("res")).catch((err) => console.log(err));
+        }
+
+    }
+
+    if(req.body.relations.specifications){
+        
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        const d3 = await models.Roles_specifications.destroy({ where: { role_id: req.params.id } });
+        await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        
+        if(req.body.relations.specifications.length > 0){
+            let relations = [];
+            for(const specification_id of req.body.relations.specifications){
+                let obj = { id: uuidv4(), role_id: req.params.id, specification_id }
+                relations.push(obj);
+            }
+            
+            console.log(relations)
+            models.Roles_specifications.bulkCreate(relations).then(() => console.log("res")).catch((err) => console.log(err));
+        }
+
     }
   
     res.status(203).json({

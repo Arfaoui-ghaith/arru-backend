@@ -15,7 +15,8 @@ const signToken = (utilisateur) => {
         email: utilisateur.email, 
         telephone: utilisateur.telephone, 
         image: utilisateur.image,
-        roles: utilisateur.roles } }, process.env.JWT_SECRET, {
+        roles: utilisateur.roles,
+        interfaces: utilisateur.interfaces } }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
@@ -102,9 +103,15 @@ exports.login = catchAsync(async (req, res, next) => {
     }
   );
 
+  const interfaces = await models.sequelize.query(
+    "SELECT i.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_interfaces` as ri,`interfaces` as i WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = ri.role_id AND ri.interface_id = i.id ",
+    { 
+        replacements: { utilisateur: utilisateur.id },
+        type: models.sequelize.QueryTypes.SELECT
+    }
+  );
 
-
-  const utilisateurInfo = { id: utilisateur.id, cin: utilisateur.cin, nom: utilisateur.nom, prenom: utilisateur.prenom, email: utilisateur.email, telephone: utilisateur.telephone, image: utilisateur.image, roles }
+  const utilisateurInfo = { id: utilisateur.id, cin: utilisateur.cin, nom: utilisateur.nom, prenom: utilisateur.prenom, email: utilisateur.email, telephone: utilisateur.telephone, image: utilisateur.image, roles, interfaces }
 
   const token = signToken(utilisateurInfo);
 
