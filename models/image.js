@@ -4,27 +4,24 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Commune extends Model {
+  class Image extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Gouvernorat, {
-        foreignKey: 'gouvernorat_id'
-      });
-
-      this.hasMany(models.Municipalite, {
-        foreignKey: 'commune_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
+      this.belongsTo(models.Projet, {
+        foreignKey: 'projet_id'
       });
     }
   };
-  Commune.init({
-    gouvernorat_id: {
+  Image.init({
+    path: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    projet_id: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
@@ -35,18 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    nom_fr: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    nom_ar: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   }, {
     sequelize,
-    modelName: 'Commune',
-    tableName: 'communes'
+    modelName: 'Image',
+    tableName: 'images'
   });
-  return Commune;
+  return Image;
 };

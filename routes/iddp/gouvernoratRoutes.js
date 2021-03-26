@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const gouvernoratController = require('./../../controllers/iddp/gouvernorats');
-const authController = require('./../controllers/authController');
+const authController = require('./../../controllers/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(gouvernoratController.consulter_tous_les_gouvernorats)

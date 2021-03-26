@@ -3,17 +3,26 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Qaurtier extends Model {
+  class Quartier extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Projet, {
+        foreignKey: 'projet_id'
+      });
+
+      this.hasMany(models.Limite_quartier, {
+        foreignKey: 'quartier_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
-  Qaurtier.init({
+  Quartier.init({
     nom: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,11 +45,18 @@ module.exports = (sequelize, DataTypes) => {
     ing:{
       type: DataTypes.DOUBLE,
       allowNull: false
+    },
+    superficie: {
+      type: DataTypes.DOUBLE,
+      allowNull: false
+    },
+    superficie_couvert: {
+      type: DataTypes.DOUBLE,
     }
   }, {
     sequelize,
-    modelName: 'Qaurtier',
-    tableName: 'qaurtiers'
+    modelName: 'Quartier',
+    tableName: 'quartiers'
   });
-  return Qaurtier;
+  return Quartier;
 };

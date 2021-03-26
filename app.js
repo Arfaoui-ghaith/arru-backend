@@ -11,6 +11,12 @@ const role_fonctionaliteRouter = require('./routes/role_fonctionaliteRoutes');
 const role_specificationRouter = require('./routes/roles_specificationsRoutes');
 const utilisateur_roleRouter = require('./routes/utilisateur_roleRoutes');
 const interfaceRouter = require('./routes/interfacesRoutes');
+const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
+const communeRouter = require('./routes/iddp/communeRoutes');
+const municipaliteRouter = require('./routes/iddp/municipaliteRoutes');
+const quartierRouter = require('./routes/iddp/quartierRoutes');
+const projetRouter = require('./routes/iddp/projetRoutes');
+const limites_quartiersRouter = require('./routes/iddp/limite_quartierRoutes');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const morgan = require('morgan');
@@ -30,6 +36,13 @@ app.use('/api/v1/specifications', specificationRouter);
 app.use('/api/v1/roles_fonctionalites', role_fonctionaliteRouter);
 app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
+
+app.use('/api/v1/gouvernorats', gouvernoratRouter);
+app.use('/api/v1/communes', communeRouter);
+app.use('/api/v1/municipalites', municipaliteRouter);
+app.use('/api/v1/quartiers', quartierRouter);
+app.use('/api/v1/projets', projetRouter);
+app.use('/api/v1/limites', limites_quartiersRouter);
 
 /*app.all('/test', (req, res, next) => {
         try{

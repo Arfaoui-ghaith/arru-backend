@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const communeController = require('./../../controllers/iddp/communes');
-const authController = require('./../controllers/authController');
+const authController = require('./../../controllers/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(communeController.consulter_tous_les_communes)

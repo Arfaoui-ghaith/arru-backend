@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('limite_qaurtiers', {
+    await queryInterface.createTable('limite_quartiers', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -12,12 +12,17 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'qaurtiers',
+          model: 'quartiers',
           key: 'id'
         }
       },
-      nom: {
-        type: Sequelize.STRING
+      iat: {
+        type: Sequelize.DOUBLE,
+        allowNull: false
+      },
+      ing:{
+        type: Sequelize.DOUBLE,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const municipaliteController = require('./../../controllers/iddp/municipalites');
-const authController = require('./../controllers/authController');
+const authController = require('./../../controllers/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(municipaliteController.consulter_tous_les_municipalites)

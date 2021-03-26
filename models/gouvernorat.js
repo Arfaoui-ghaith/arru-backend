@@ -1,4 +1,5 @@
 'use strict';
+const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -10,7 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+
+        this.hasMany(models.Commune, {
+          foreignKey: 'gouvernorat_id',
+          onDelete: 'cascade',
+          onUpdate: 'cascade',
+          hooks: true,
+        });
+      
     }
   };
   Gouvernorat.init({
@@ -25,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Gouvernorat',
-    tableName: 'gouvernorates'
+    tableName: 'gouvernorats'
   });
   return Gouvernorat;
 };

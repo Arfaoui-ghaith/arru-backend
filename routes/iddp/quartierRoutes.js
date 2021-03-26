@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const quartierController = require('./../../controllers/iddp/quartiers');
-const authController = require('./../controllers/authController');
+const authController = require('./../../controllers/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(quartierController.consulter_tous_les_quartiers)

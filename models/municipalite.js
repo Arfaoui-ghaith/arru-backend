@@ -10,21 +10,19 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.hasMany(models.Projet, {
+        foreignKey: 'municipalite_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
+
+      this.belongsTo(models.Commune, {
+        foreignKey: 'commune_id'
+      });
     }
   };
   Municipalite.init({
-    gouvernorat_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      validate: {
-        is(value){
-          if(!UUIDv4.validate(value)){
-            throw new Error('This request is rejected for invalid id!');
-          }
-        }
-      }
-    },
     commune_id: {
       type: DataTypes.UUID,
       allowNull: false,

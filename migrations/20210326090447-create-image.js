@@ -1,28 +1,23 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('municipalites', {
+    await queryInterface.createTable('images', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true,
       },
-      commune_id: {
+      path: {
+        type: Sequelize.STRING
+      },
+      projet_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'communes',
+          model: 'projets',
           key: 'id'
         }
-      },
-      nom: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      nom_ar: {
-        type: Sequelize.STRING,
-        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +30,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('municipalites');
+    await queryInterface.dropTable('images');
   }
 };

@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('qaurtiers', {
+    await queryInterface.createTable('quartiers', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -17,7 +17,23 @@ module.exports = {
         }
       },
       nom: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      iat: {
+        type: Sequelize.DOUBLE,
+        allowNull: false
+      },
+      ing:{
+        type: Sequelize.DOUBLE,
+        allowNull: false
+      },
+      superficie: {
+        type: Sequelize.DOUBLE,
+        allowNull: false
+      },
+      superficie_couvert: {
+        type: Sequelize.DOUBLE,
       },
       createdAt: {
         allowNull: false,
@@ -30,6 +46,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('qaurtiers');
+    await queryInterface.dropTable('quartiers');
   }
 };

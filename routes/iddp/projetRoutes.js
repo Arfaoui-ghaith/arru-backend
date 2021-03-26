@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const projetController = require('./../../controllers/iddp/projets');
-const authController = require('./../controllers/authController');
+const authController = require('./../../controllers/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(projetController.consulter_tous_les_projets)

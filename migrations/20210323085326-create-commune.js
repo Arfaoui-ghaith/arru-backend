@@ -6,22 +6,22 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       gouvernorat_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'gouvernorates',
+          model: 'gouvernorats',
           key: 'id'
         }
       },
       nom_fr: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       nom_ar: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       createdAt: {
