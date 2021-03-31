@@ -19,6 +19,27 @@ exports.consulter_tous_les_municipalites = catchAsync(async (req, res, next) => 
     });
 });
 
+exports.consulter_les_projets_par_municipalite = catchAsync(async (req, res, next) => {
+
+    const projets = await models.sequelize.query(
+        "select m.id, m.nom, m.nom_ar from municipalites as m, projets as p where m.id = p.municipalite_id and p.municipalite_id = :municipalite",        
+        { 
+            replacements: { municipalite: req.params.id },
+            type: models.sequelize.QueryTypes.SELECT
+        }
+      );
+  
+    if(!projets){
+       return next(new AppError('No projets found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: projets.length,
+        projets
+    });
+});
+
 exports.consulter_municipalite = catchAsync(async (req, res, next) => {
     const municipalite = await models.Municipalite.findByPk(req.params.id);
   

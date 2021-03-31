@@ -19,6 +19,28 @@ exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
+
+    const projet = await models.Projet.findByPk(req.params.id);
+  
+    if(!projet){
+       return next(new AppError('No projet found.', 404));
+    }
+
+    const quartiers = await models.Quartier.findAll({ where: { projet_id: req.params.id } })
+    const quartiersInfos = [];
+    for(const quartier of quartiers){
+        let limites_quartier = await models.Limite_quartier.findAll({ where: { quartier_id: quartier.id  } });
+        let quartierOBJ = { ...quartier, limites_quartier };
+        quartiersInfos.push(quartierOBJ);
+    }
+
+    res.status(200).json({
+        status: 'success',
+        projet: {...projet, quartiersInfos}
+    });
+});
+
 exports.consulter_projet = catchAsync(async (req, res, next) => {
     const projet = await models.Projet.findByPk(req.params.id);
   

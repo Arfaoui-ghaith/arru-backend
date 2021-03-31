@@ -15,5 +15,7 @@ router.route('/:id')
     .put(municipaliteController.modifier_municipalite)
     .delete(municipaliteController.supprimer_municipalite);
 
+router.route('/:id/projets')
+    .get(municipaliteController.consulter_les_projets_par_municipalite);
 
 module.exports = router;

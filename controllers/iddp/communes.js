@@ -19,6 +19,48 @@ exports.consulter_tous_les_communes = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.consulter_les_projets_par_commune = catchAsync(async (req, res, next) => {
+
+    const projets = await models.sequelize.query(
+        "select m.id, m.nom, m.nom_ar from municipalites as m, projets as p, communes as c where c.id = m.commune_id and m.id = p.municipalite_id and c.id = :commune",        
+        { 
+            replacements: { commune: req.params.id },
+            type: models.sequelize.QueryTypes.SELECT
+        }
+      );
+  
+    if(!projets){
+       return next(new AppError('No projets found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: projets.length,
+        projets
+    });
+});
+
+exports.consulter_les_municipalites_par_commune = catchAsync(async (req, res, next) => {
+
+    const municipalites = await models.sequelize.query(
+        "select m.id, m.nom, m.nom_ar from municipalites as m, communes as c where c.id = m.commune_id and m.commune_id = :commune",        
+        { 
+            replacements: { commune: req.params.id },
+            type: models.sequelize.QueryTypes.SELECT
+        }
+      );
+  
+    if(!municipalites){
+       return next(new AppError('No municipalites found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: municipalites.length,
+        municipalites
+    });
+});
+
 exports.consulter_commune = catchAsync(async (req, res, next) => {
     const commune = await models.Commune.findByPk(req.params.id);
   

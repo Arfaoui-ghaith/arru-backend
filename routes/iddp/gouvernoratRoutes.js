@@ -15,5 +15,10 @@ router.route('/:id')
     .put(gouvernoratController.modifier_gouvernorat)
     .delete(gouvernoratController.supprimer_gouvernorat);
 
+router.route('/:id/communes')
+    .get(gouvernoratController.consulter_les_communes_par_gouvernorat)
+
+router.route('/:id/projets')
+    .get(gouvernoratController.consulter_les_projets_par_gouvernorat);
 
 module.exports = router;

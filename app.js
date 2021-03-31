@@ -17,6 +17,8 @@ const municipaliteRouter = require('./routes/iddp/municipaliteRoutes');
 const quartierRouter = require('./routes/iddp/quartierRoutes');
 const projetRouter = require('./routes/iddp/projetRoutes');
 const limites_quartiersRouter = require('./routes/iddp/limite_quartierRoutes');
+const critereRouter = require('./routes/iddp/critereRoutes');
+
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const morgan = require('morgan');
@@ -43,6 +45,7 @@ app.use('/api/v1/municipalites', municipaliteRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
 app.use('/api/v1/limites', limites_quartiersRouter);
+app.use('/api/v1/criteres', critereRouter);
 
 /*app.all('/test', (req, res, next) => {
         try{

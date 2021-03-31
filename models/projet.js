@@ -45,6 +45,16 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
+    schema_criteres_id: {
+      type: DataTypes.UUID,
+      validate: {
+        is(value){
+          if(!UUIDv4.validate(value)){
+            throw new Error('This request is rejected for invalid id!');
+          }
+        }
+      }
+    },
     nbr_qaurtier: {
       type: DataTypes.INTEGER,
       
