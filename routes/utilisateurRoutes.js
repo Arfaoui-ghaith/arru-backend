@@ -12,7 +12,7 @@ router.route('/login').post(authController.login);
 router.route('/forgotPassword').post(authController.forgotPassword);
 router.route('/resetPassword').post(authController.resetPassword);
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(/*authController.restrictTo('consulter tous les utilisateurs'),*/ utilisateurController.consulter_tous_les_utilisateurs)

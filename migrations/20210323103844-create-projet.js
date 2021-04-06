@@ -16,13 +16,6 @@ module.exports = {
           key: 'id'
         }
       },
-      schema_criteres_id: {
-        type: Sequelize.UUID,
-        references: {
-          model: 'criteres',
-          key: 'id'
-        }
-      },
       nom: {
         type: Sequelize.STRING
       },

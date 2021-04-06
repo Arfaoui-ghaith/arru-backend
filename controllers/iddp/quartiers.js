@@ -3,19 +3,39 @@ const { v4: uuidv4 } = require('uuid');
 const { QueryTypes } = require('sequelize');
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
+const projet = require('../../models/projet');
 
 exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
 
-    const quartiers = await models.Quartier.findAll({});
+    const quartiers = await models.sequelize.query(
+    "select p.nom as projet_nom, q.id, q.nom, q.iat, q.ing from projets as p, quartiers as q where p.id = q.projet_id",
+    {
+        type: models.sequelize.QueryTypes.SELECT
+    });
   
     if(!quartiers){
        return next(new AppError('No quartiers found.', 404));
     }
+
+    let quartiersInfos = [];
+    
+    for(const quartier of quartiers){
+        console.log(quartier)
+        let limites = await models.sequelize.query(
+            "select lq.iat, lq.ing from limite_quartiers as lq where lq.qaurtier_id = :quartier ORDER BY lq.createdAt",
+            {
+                replacements: { quartier: quartier.id },
+                type: models.sequelize.QueryTypes.SELECT
+            });
+        
+        let obj = { ...quartier, limites }
+        quartiersInfos.push(obj);
+    }
   
     res.status(200).json({
         status: 'success',
-        results: quartiers.length,
-        quartiers
+        results: quartiersInfos.length,
+        quartiers: quartiersInfos
     });
 });
 
@@ -34,15 +54,25 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
-    const nouveau_quartier = await models.Quartier.create({id: uuidv4(),...req.body});
+    const projet = await models.Projet.findByPk(req.params.projet_id);
   
-    if(!nouveau_quartier){
-       return next(new AppError('Invalid fields or duplicate quartier', 401));
+    if(!projet){
+       return next(new AppError('Projet not found with this ID', 404));
+    }
+
+    console.log(req.body);
+
+   if(req.body.quartiers && req.body.quartiers.length > 0){
+        req.body.quartiers.map(async (quartier) => {
+            let nouveau_quartier = await models.Quartier.create({id: uuidv4(), nom: quartier.nom, projet_id: projet.id, iat: quartier.center.lat, ing: quartier.center.lng, superficie: 0});
+            quartier.latlngs.forEach(async (latlng) => {
+                let limite = await models.Limite_quartier.create({id: uuidv4(), qaurtier_id: nouveau_quartier.id, iat: latlng.lat, ing: latlng.lng});
+            });
+        });
     }
   
     res.status(201).json({
-        status: 'success',
-        nouveau_quartier
+        status: 'success'
     });
 });
 
@@ -62,12 +92,14 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
 exports.supprimer_quartier = catchAsync(async(req, res, next) => {
 
+    const limites = await models.Limite_quartier.destroy({ where: { qaurtier_id: req.params.id } });
+
     const quartier = await models.Quartier.destroy({ where: { id: req.params.id } });
   
     if(!quartier){
        return next(new AppError('Invalid fields or No quartier found with this ID', 404));
     }
-  
+
     res.status(203).json({
         status: 'success',
     });

@@ -1,4 +1,5 @@
 'use strict';
+const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -34,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    nom_fr: {
+    nom: {
       type: DataTypes.STRING,
       allowNull: false,
     },

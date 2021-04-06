@@ -7,7 +7,8 @@ const authController = require('./../../controllers/authController');
 //router.use(authController.protect);
 
 router.route('/')
-    .get(quartierController.consulter_tous_les_quartiers)
+    .get(quartierController.consulter_tous_les_quartiers);
+router.route('/:projet_id')
     .post(quartierController.ajout_quartier);
 
 router.route('/:id')

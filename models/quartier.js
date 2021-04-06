@@ -1,4 +1,5 @@
 'use strict';
+const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
