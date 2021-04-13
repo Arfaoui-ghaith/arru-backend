@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const role_specificationController = require('../controllers/roles_specifications');
-const authController = require('./../controllers/authController');
+const role_specificationController = require('./../../controllers/access_permissions/roles_specifications');
+const authController = require('./../../controllers/access_permissions/authController');
 
 router.use(authController.protect);
 

@@ -1,10 +1,10 @@
-const models = require('./../models/index');
+const models = require('../../models/index');
 const jwt = require('jsonwebtoken');
-const AppError = require('./../utils/appError');
+const AppError = require('../../utils/appError');
 const bcrypt = require('bcryptjs');
-const catchAsync = require('./../utils/catchAsync');
+const catchAsync = require('../../utils/catchAsync');
 const { QueryTypes } = require('sequelize');
-const sendEmail = require('./../utils/email');
+const sendEmail = require('../../utils/email');
 
 const signToken = (utilisateur) => {
     return jwt.sign({ payload: {

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const utilisateurController = require('./../controllers/utilisateurs.js');
-const authController = require('./../controllers/authController');
-const imageEditAndSave = require('./../utils/imageEditAndSave');
+const utilisateurController = require('./../../controllers/access_permissions/utilisateurs.js');
+const authController = require('./../../controllers/access_permissions/authController');
+const imageEditAndSave = require('./../../utils/imageEditAndSave');
 
 router.route('/:id')
     .get(/*authController.restrictTo('consulter tous les utilisateurs'),*/ utilisateurController.consulter_utilisateur);

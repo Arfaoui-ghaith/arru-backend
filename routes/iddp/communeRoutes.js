@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const communeController = require('./../../controllers/iddp/communes');
+const communeController = require('../../controllers/iddp/communes');
 const authController = require('./../../controllers/authController');
 
 //router.use(authController.protect);
