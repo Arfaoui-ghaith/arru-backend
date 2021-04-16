@@ -1,5 +1,4 @@
 'use strict';
-const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -11,22 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Quartier, {
-        foreignKey: 'quartier_id'
-      });
+      // define association here
     }
   };
   Limite_quartier.init({
-    qaurtier_id: {
-      type: DataTypes.UUID,
+    quartier_id: {
+      type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        is(value){
-          if(!UUIDv4.validate(value)){
-            throw new Error('This request is rejected for invalid id!');
-          }
-        }
-      }
     },
     iat: {
       type: DataTypes.DOUBLE,
@@ -35,12 +25,14 @@ module.exports = (sequelize, DataTypes) => {
     ing:{
       type: DataTypes.DOUBLE,
       allowNull: false
-    }
-
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
   }, {
     sequelize,
     modelName: 'Limite_quartier',
-    tableName: 'limite_quartiers'
   });
   return Limite_quartier;
 };

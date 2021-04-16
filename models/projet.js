@@ -1,5 +1,4 @@
 'use strict';
-const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -11,18 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Municipalite, {
-        foreignKey: 'municipalite_id'
-      });
-
-      this.hasMany(models.Quartier, {
+      this.hasOne(models.Infrastructure, {
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
         hooks: true,
       });
-
-      this.hasMany(models.Image, {
+      this.hasMany(models.Quartier, {
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -31,82 +25,38 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Projet.init({
-    nom: {
+    commune_id: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    municipalite_id: {
-      type: DataTypes.UUID,
+    nom_fr: {
       allowNull: false,
-      validate: {
-        is(value){
-          if(!UUIDv4.validate(value)){
-            throw new Error('This request is rejected for invalid id!');
-          }
-        }
-      }
+      type: DataTypes.STRING
     },
-   
-    nbr_qaurtier: {
-      type: DataTypes.INTEGER,
-      
+    nom_ar: {
+      allowNull: false,
+      type: DataTypes.STRING
     },
-    nbr_maison: {
-      type: DataTypes.INTEGER,
-      
-    },
-    nbr_habitant: {
-      type: DataTypes.INTEGER,
-      
-    },
-    taux_habitation: {
-      type: DataTypes.INTEGER,
-    },
-    assainissement_qte: {
+    surface_totale: {
       type: DataTypes.DOUBLE,
     },
-    assainissement_cout: {
-      type: DataTypes.INTEGER,
-    },
-    assainissement_taux: {
-      type: DataTypes.INTEGER,
-    },
-    eclairage_public_qte: {
-      type: DataTypes.INTEGER,
-    },
-    eclairage_public_cout: {
-      type: DataTypes.INTEGER,
-    },
-    eclairage_public_taux: {
-      type: DataTypes.INTEGER,
-    },
-    voirie_qte: {
+    surface_urbanisée_totale: {
       type: DataTypes.DOUBLE,
     },
-    voirie_cout: {
+    nombre_logements_totale:{
       type: DataTypes.INTEGER,
     },
-    voirie_taux: {
+    nombre_habitants_totale:{
       type: DataTypes.INTEGER,
     },
-    eau_potable_qte: {
-      type: DataTypes.DOUBLE,
+    eligible: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
-    eau_potable_cout: {
-      type: DataTypes.INTEGER,
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
     },
-    eau_potable_taux: {
-      type: DataTypes.INTEGER,
-    },
-    drainage_qte: {
-      type: DataTypes.DOUBLE,
-    },
-    drainage_cout: {
-      type: DataTypes.INTEGER,
-    },
-    drainage_taux: {
-      type: DataTypes.INTEGER,
-    }
   }, {
     sequelize,
     modelName: 'Projet',

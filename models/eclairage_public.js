@@ -3,38 +3,32 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Commune extends Model {
+  class Eclairage_public extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Gouvernorat, {
-        foreignKey: 'gouvernorat_id'
+      this.belongsTo(models.Infrastructure, {
+        foreignKey: 'infrastructure_id'
       });
     }
   };
-  Commune.init({
-    nom_fr: {
+  Eclairage_public.init({
+    infrastructure_id: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    nom_ar: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    gouvernorat_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    p_lumineux: DataTypes.DOUBLE,
+    cout: DataTypes.DOUBLE,
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
   }, {
-    modelName: 'Commune',
-    tableName: 'communes'
+    sequelize,
+    modelName: 'Eclairage_public',
   });
-  return Commune;
+  return Eclairage_public;
 };

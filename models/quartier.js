@@ -1,5 +1,4 @@
 'use strict';
-const { UUIDv4 } = require('uuid-v4-validator');
 const {
   Model
 } = require('sequelize');
@@ -14,46 +13,45 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Projet, {
         foreignKey: 'projet_id'
       });
-
-      this.hasMany(models.Limite_quartier, {
-        foreignKey: 'quartier_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
     }
   };
   Quartier.init({
-    nom: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     projet_id: {
-      type: DataTypes.UUID,
       allowNull: false,
-      validate: {
-        is(value){
-          if(!UUIDv4.validate(value)){
-            throw new Error('This request is rejected for invalid id!');
-          }
-        }
-      }
+      type: DataTypes.STRING
     },
-    iat: {
+    nom_fr: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
+    nom_ar: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
+    lat: {
       type: DataTypes.DOUBLE,
       allowNull: false
     },
-    ing:{
+    lng:{
       type: DataTypes.DOUBLE,
       allowNull: false
     },
-    superficie: {
+    surface: {
       type: DataTypes.DOUBLE,
-      allowNull: false
     },
-    superficie_couvert: {
+    surface_urbanisée: {
       type: DataTypes.DOUBLE,
-    }
+    },
+    nombre_logements:{
+      type: DataTypes.INTEGER,
+    },
+    nombre_habitants:{
+      type: DataTypes.INTEGER,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
   }, {
     sequelize,
     modelName: 'Quartier',
