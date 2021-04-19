@@ -39,6 +39,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      tranche: {
+        type: Sequelize.INTEGER,
+      },
       active: {
         type: Sequelize.BOOLEAN,
         defaultValue: true

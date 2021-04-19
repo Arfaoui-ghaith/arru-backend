@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasOne(models.Fiche_critere, {
+        foreignKey: 'gouvernorat_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Gouvernorat.init({

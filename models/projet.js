@@ -53,6 +53,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    tranche: {
+      type: DataTypes.INTEGER,
+    },
     active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
