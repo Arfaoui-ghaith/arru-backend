@@ -17,6 +17,7 @@ exports.consulter_tous_les_eclairages = catchAsync(async (req, res, next) => {
         results: eclairages.length,
         eclairages
     });
+    
 });
 
 exports.consulter_eclairage_par_infrastructure = catchAsync(async (req, res, next) => {
@@ -31,6 +32,7 @@ exports.consulter_eclairage_par_infrastructure = catchAsync(async (req, res, nex
         status: 'success',
         eclairage
     });
+
 });
 
 exports.consulter_eclairage_par_projet = catchAsync(async (req, res, next) => {
@@ -51,6 +53,7 @@ exports.consulter_eclairage_par_projet = catchAsync(async (req, res, next) => {
         status: 'success',
         eclairage
     });
+
 });
 
 exports.ajout_eclairage = catchAsync(async (req, res, next) => {
@@ -65,6 +68,7 @@ exports.ajout_eclairage = catchAsync(async (req, res, next) => {
         status: 'success',
         nouveau_eclairage
     });
+
 });
 
 exports.modifier_eclairage = catchAsync(async(req, res, next) => {
