@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('fiche_criteres', {
+    await queryInterface.createTable('Fiche_criteres', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -10,13 +10,12 @@ module.exports = {
       },
       gouvernorat_id: {
         type: Sequelize.STRING,
-        allowNull: false,
         references: {
           model: 'gouvernorats',
           key: 'id'
         }
       },
-      nbr_quartier_min: {
+      nbr_quartier: {
         type: Sequelize.INTEGER,
       },
       surface_totale: {
@@ -31,9 +30,17 @@ module.exports = {
       nombre_habitants_totale:{
         type: Sequelize.INTEGER,
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('fiche_criteres');
+    await queryInterface.dropTable('Fiche_criteres');
   }
 };

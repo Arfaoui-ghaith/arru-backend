@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Limite_quartier',
+    tableName: 'limite_quartiers'
   });
   return Limite_quartier;
 };

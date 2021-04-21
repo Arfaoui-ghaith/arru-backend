@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Eau_potable',
+    tableName: 'eau_potables'
   });
   return Eau_potable;
 };

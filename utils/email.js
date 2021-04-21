@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const { options } = require('../routes/utilisateurRoutes');
+const { options } = require('../routes/access_permissions/utilisateurRoutes');
 
 const sendEMail = async options => {
 // 1) Create a transporter

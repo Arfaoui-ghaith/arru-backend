@@ -15,30 +15,29 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   };
-  critere.init({
+  Fiche_critere.init({
     gouvernorat_id: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
-    nbr_quartier_min: {
-      type: Sequelize.INTEGER,
+    nbr_quartier: {
+      type: DataTypes.INTEGER,
     },
     surface_totale: {
-      type: Sequelize.DOUBLE,
+      type: DataTypes.DOUBLE,
     },
     surface_urbanisée_totale: {
-      type: Sequelize.DOUBLE,
+      type: DataTypes.DOUBLE,
     },
     nombre_logements_totale:{
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
     },
     nombre_habitants_totale:{
-      type: Sequelize.INTEGER,
-    },
+      type: DataTypes.INTEGER,
+    }
   }, {
     sequelize,
-    modelName: 'fiche_critere',
-    tableName: 'fiche_criteres'
+    modelName: 'Fiche_critere',
+    tableName: 'fiche_criteres',
   });
   return Fiche_critere;
 };

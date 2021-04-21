@@ -1,6 +1,6 @@
 const models = require('./../../models/index');
 const { v4: uuidv4 } = require('uuid');
-const { QueryTypes } = require('sequelize');
+
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 

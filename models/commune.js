@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true
     },
   }, {
+    sequelize,
     modelName: 'Commune',
     tableName: 'communes'
   });

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const communeController = require('../../controllers/iddp/communes');
-const authController = require('./../../controllers/authController');
+const authController = require('./../../controllers/access_permissions/authController');
 
 //router.use(authController.protect);
 
@@ -15,8 +15,6 @@ router.route('/:id')
     .put(communeController.modifier_commune)
     .delete(communeController.supprimer_commune);
 
-router.route('/:id/municipalites')
-    .get(communeController.consulter_les_municipalites_par_commune)
 router.route('/:id/projets')
     .get(communeController.consulter_les_projets_par_commune);
 

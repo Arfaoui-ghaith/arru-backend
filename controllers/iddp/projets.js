@@ -1,12 +1,11 @@
 const models = require('./../../models/index');
-const { v4: uuidv4 } = require('uuid');
-const { QueryTypes } = require('sequelize');
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
+const codification = require('./../utils/codification');
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
 
-    const projets = await models.Projet.findAll({});
+    const projets = await models.Projet.findAll({ where: { active: true } });
   
     if(!projets){
        return next(new AppError('No projets found.', 404));
@@ -56,35 +55,22 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
 
 exports.ajout_projet = catchAsync(async (req, res, next) => {
 
-    const nouveau_projet = await models.Projet.create({id: uuidv4(),...req.body});
+    const nouveau_projet = await models.Projet.create({id: await codification.codeProjet(req.body.projet.commune_id,req.body.projet.nom_fr,req.body.projet.tranche) ,...req.body.projet});
   
     if(!nouveau_projet){
        return next(new AppError('Invalid fields or duplicate projet', 401));
     }
+
+    req.infrastructure = req.body.infrastructure;
+    req.projet = nouveau_projet.id;
   
-    res.status(201).json({
-        status: 'success',
-        nouveau_projet
-    });
+    console.log(req.projet);
+    next();
 });
 
 exports.modifier_projet = catchAsync(async(req, res, next) => {
 
-    const utlisateur = await models.Projet.update(req.body, { where: { id: req.params.id } });
-  
-    if(!utlisateur){
-       return next(new AppError('Invalid fields or No projet found with this ID', 404));
-    }
-  
-    res.status(203).json({
-        status: 'success',
-    });
-    
-});
-
-exports.supprimer_projet = catchAsync(async(req, res, next) => {
-
-    const projet = await models.Projet.destroy({ where: { id: req.params.id } });
+    const projet = await models.Projet.update(req.body, { where: { id: req.params.id } });
   
     if(!projet){
        return next(new AppError('Invalid fields or No projet found with this ID', 404));
@@ -93,4 +79,5 @@ exports.supprimer_projet = catchAsync(async(req, res, next) => {
     res.status(203).json({
         status: 'success',
     });
+    
 });

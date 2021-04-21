@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Eclairage_public',
+    tableName: 'eclairage_publics'
   });
   return Eclairage_public;
 };

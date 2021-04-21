@@ -3,17 +3,16 @@ const cors = require('cors');
 const app = express().use('*', cors());
 
 const AppError = require('./utils/appError');
-const utilisateurRouter = require('./routes/utilisateurRoutes');
-const roleRouter = require('./routes/roleRoutes');
-const fonctionaliteRouter = require('./routes/fonctionaliteRoutes');
-const specificationRouter = require('./routes/specificationRoutes');
-const role_fonctionaliteRouter = require('./routes/role_fonctionaliteRoutes');
-const role_specificationRouter = require('./routes/roles_specificationsRoutes');
-const utilisateur_roleRouter = require('./routes/utilisateur_roleRoutes');
-const interfaceRouter = require('./routes/interfacesRoutes');
+const utilisateurRouter = require('./routes/access_permissions/utilisateurRoutes');
+const roleRouter = require('./routes/access_permissions/roleRoutes');
+const fonctionaliteRouter = require('./routes/access_permissions/fonctionaliteRoutes');
+const specificationRouter = require('./routes/access_permissions/specificationRoutes');
+const role_fonctionaliteRouter = require('./routes/access_permissions/role_fonctionaliteRoutes');
+const role_specificationRouter = require('./routes/access_permissions/roles_specificationsRoutes');
+const utilisateur_roleRouter = require('./routes/access_permissions/utilisateur_roleRoutes');
+const interfaceRouter = require('./routes/access_permissions/interfacesRoutes');
 const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
-const municipaliteRouter = require('./routes/iddp/municipaliteRoutes');
 const quartierRouter = require('./routes/iddp/quartierRoutes');
 const projetRouter = require('./routes/iddp/projetRoutes');
 const limites_quartiersRouter = require('./routes/iddp/limite_quartierRoutes');
@@ -41,7 +40,7 @@ app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 
 app.use('/api/v1/gouvernorats', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);
-app.use('/api/v1/municipalites', municipaliteRouter);
+
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
 app.use('/api/v1/limites', limites_quartiersRouter);

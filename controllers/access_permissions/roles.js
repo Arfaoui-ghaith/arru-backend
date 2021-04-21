@@ -1,13 +1,13 @@
-const models = require('./../models/index');
+const models = require('./../../models/index');
 const { v4: uuidv4 } = require('uuid');
 const { QueryTypes } = require('sequelize');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const catchAsync = require('./../../utils/catchAsync');
+const AppError = require('./../../utils/appError');
 
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
-const recall = require('./utils/recall');
+const recall = require('./../utils/recall');
 
 exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
 

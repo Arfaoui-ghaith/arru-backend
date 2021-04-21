@@ -1,5 +1,5 @@
-const utilisateurs = require('./../../controllers/utilisateurs');
-const roles = require('./../../controllers/roles');
+const utilisateurs = require('./../../controllers/access_permissions/utilisateurs');
+const roles = require('./../../controllers/access_permissions/roles');
 module.exports = {
     Query: {
         ...utilisateurs.utilisateurResolvers.Query,

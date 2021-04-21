@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const critereController = require('./../../controllers/iddp/criteres');
-const authController = require('./../../controllers/authController');
+const authController = require('./../../controllers/access_permissions/authController');
 
 //router.use(authController.protect);
 

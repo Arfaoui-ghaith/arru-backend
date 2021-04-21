@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const quartierController = require('./../../controllers/iddp/quartiers');
-const authController = require('./../../controllers/authController');
+const authController = require('./../../controllers/access_permissions/authController');
 
 //router.use(authController.protect);
 

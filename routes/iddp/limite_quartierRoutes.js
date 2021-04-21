@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const limiteController = require('./../../controllers/iddp/limites_qaurtiers');
-const authController = require('./../../controllers/authController');
+const authController = require('./../../controllers/access_permissions/authController');
 
 //router.use(authController.protect);
 
