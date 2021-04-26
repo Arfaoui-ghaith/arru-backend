@@ -46,6 +46,10 @@ const sendErrorDev = (err, req, res) => {
   });
 };
 
+const handleSequelizeUniqueError = (error) => {
+  return new AppError(error.errors[0].message, 400);
+}
+
 const sendErrorProd = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith('/api')) {
@@ -128,6 +132,7 @@ module.exports = (err, req, res, next) => {
       error = handleValidationErrorDB(error);*/
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
+    if(error.name === 'SequelizeUniqueConstraintError') error = handleSequelizeUniqueError(error);
 
     sendErrorProd(error, req, res);
   }

@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Fiche_critere extends Model {
+  class Fiche_criteres extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   };
-  Fiche_critere.init({
+  Fiche_criteres.init({
     gouvernorat_id: {
       type: DataTypes.STRING,
     },
@@ -36,8 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Fiche_critere',
+    modelName: 'Fiche_criteres',
     tableName: 'fiche_criteres',
   });
-  return Fiche_critere;
+  return Fiche_criteres;
 };

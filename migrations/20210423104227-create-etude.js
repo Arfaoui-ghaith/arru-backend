@@ -1,29 +1,26 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('assainissements', {
+    await queryInterface.createTable('Etudes', {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
-      infrastructure_id: {
-        allowNull: false,
+      projet_id: {
         type: Sequelize.STRING,
+        allowNull: false,
         references: {
-          model: 'infrastructures',
+          model: 'Projets',
           key: 'id'
         }
       },
-      quantité: {
-        type: Sequelize.DOUBLE
+      bureau:{
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       cout: {
-        type: Sequelize.DOUBLE
-      },
-      active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
+        type: Sequelize.DOUBLE,
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +33,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('assainissements');
+    await queryInterface.dropTable('Etudes');
   }
 };

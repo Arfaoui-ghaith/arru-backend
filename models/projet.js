@@ -10,13 +10,18 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasOne(models.Infrastructure, {
+      this.belongsTo(models.Zone_Intervention, {
+        foreignKey: 'zone_intervention_id'
+      });
+
+      this.hasMany(models.Infrastructure, {
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
         hooks: true,
       });
-      this.hasMany(models.Quartier, {
+
+      this.hasOne(models.Etude, {
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -25,41 +30,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Projet.init({
-    commune_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    nom_fr: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    nom_ar: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    surface_totale: {
-      type: DataTypes.DOUBLE,
-    },
-    surface_urbanisée_totale: {
-      type: DataTypes.DOUBLE,
-    },
-    nombre_logements_totale:{
-      type: DataTypes.INTEGER,
-    },
-    nombre_habitants_totale:{
-      type: DataTypes.INTEGER,
-    },
     eligible: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    tranche: {
-      type: DataTypes.INTEGER,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    },
+    zone_intervention_id: {
+      allowNull: false,
+      type: DataTypes.STRING
+    }
   }, {
     sequelize,
     modelName: 'Projet',

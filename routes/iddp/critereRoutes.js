@@ -12,8 +12,7 @@ router.route('/')
 
 router.route('/:id')
     .get(critereController.consulter_critere)
-    .put(critereController.modifier_critere)
-    .delete(critereController.supprimer_critere);
+    .put(critereController.modifier_critere);
 
 
 module.exports = router;

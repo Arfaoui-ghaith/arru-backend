@@ -1,6 +1,30 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('Gouvernorats', {
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: Sequelize.STRING
+      },
+      nom_fr: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      nom_ar: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    });
+
     await queryInterface.createTable('gouvernorats', {
       id: {
         allowNull: false,
@@ -153,6 +177,6 @@ module.exports = {
     ]);
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('gouvernorats');
+    await queryInterface.dropTable('Gouvernorats');
   }
 };

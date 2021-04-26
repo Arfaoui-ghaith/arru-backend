@@ -1,17 +1,17 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('quartiers', {
+    await queryInterface.createTable('Zone_Interventions', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.STRING
       },
-      projet_id: {
-        allowNull: false,
+      commune_id: {
         type: Sequelize.STRING,
+        allowNull: false,
         references: {
-          model: 'projets',
+          model: 'Communes',
           key: 'id'
         }
       },
@@ -23,29 +23,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      lat: {
-        type: Sequelize.DOUBLE,
-        allowNull: false
-      },
-      lng: {
-        type: Sequelize.DOUBLE,
-        allowNull: false
-      },
-      surface: {
+      surface_totale: {
         type: Sequelize.DOUBLE,
       },
-      surface_urbanisée: {
+      surface_urbanisée_totale: {
         type: Sequelize.DOUBLE,
       },
-      nombre_logements:{
+      nombre_logements_totale:{
         type: Sequelize.INTEGER,
       },
-      nombre_habitants:{
+      nombre_habitants_totale:{
         type: Sequelize.INTEGER,
-      },
-      active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
       },
       createdAt: {
         allowNull: false,
@@ -58,6 +46,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('quartiers');
+    await queryInterface.dropTable('Zone_Interventions');
   }
 };

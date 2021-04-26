@@ -5,7 +5,7 @@ const codification = require('./../utils/codification');
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
 
-    const projets = await models.Projet.findAll({ where: { active: true } });
+    const projets = await models.Projet.findAll({});
   
     if(!projets){
        return next(new AppError('No projets found.', 404));
@@ -55,13 +55,13 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
 
 exports.ajout_projet = catchAsync(async (req, res, next) => {
 
-    const nouveau_projet = await models.Projet.create({id: await codification.codeProjet(req.body.projet.commune_id,req.body.projet.nom_fr,req.body.projet.tranche) ,...req.body.projet});
+    const nouveau_projet = await models.Projet.create({id: await codification.codeProjet(req.body.projet.zone_intervention_id), zone_intervention_id: req.body.projet.zone_intervention_id });
   
     if(!nouveau_projet){
        return next(new AppError('Invalid fields or duplicate projet', 401));
     }
 
-    req.infrastructure = req.body.infrastructure;
+    req.infrastructures = req.body.infrastructures;
     req.projet = nouveau_projet.id;
   
     console.log(req.projet);

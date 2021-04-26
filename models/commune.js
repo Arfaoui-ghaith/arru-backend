@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Commune.init({
+    gouvernorat_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     nom_fr: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -23,14 +27,6 @@ module.exports = (sequelize, DataTypes) => {
     nom_ar: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    gouvernorat_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
     },
   }, {
     sequelize,

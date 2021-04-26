@@ -8,13 +8,17 @@ exports.codeCommune = (gouvernorat_id,nom_commune) => {
     return gouvernorat_id+'-'+nom_commune.slice(0,4).trim().toUpperCase();
 };
 
-exports.codeProjet= async (commune_id, nom_projet, tranche='') => {
-    let nom = nom_projet.slice(0,3);
-    if(nom_projet.slice(0,3).includes(' ')){
-        nom = nom_projet.slice(nom_projet.indexOf(' ')+1, nom_projet.indexOf(' ')+4).trim().replace(' ','_');
+exports.codeProjet= async (zone_intervention_id) => {
+    return zone_intervention_id+'-PR';
+}
+
+exports.codeZone_Intervention=  (commune_id, nom_zone) => {
+    let nom = nom_zone.slice(0,3);
+    if(nom_zone.slice(0,3).includes(' ')){
+        nom = nom_zone.slice(nom_zone.indexOf(' ')+1, nom_zone.indexOf(' ')+4).trim().replace(' ','_');
     }
-    const count = await models.Projet.count({ where: { commune_id } });
-    return (commune_id+'-'+nom+'-'+tranche+String.fromCharCode(65+count)).trim().toUpperCase();
+    
+    return (commune_id+'-'+nom.toUpperCase());
 }
 
 exports.codeQuartier =  (commune_id,nom_quartier) => {
@@ -24,39 +28,11 @@ exports.codeQuartier =  (commune_id,nom_quartier) => {
     return commune_id+'-'+nom_quartier.slice(0,3).trim().toUpperCase();
 }
 
-exports.codeCritere =  (gouvernorat_id) => {
+exports.codeCritere =  async (gouvernorat_id) => {
     const count = await models.Fiche_critere.count({ where: { gouvernorat_id } });
     return gouvernorat_id+'-FC'+count+1;
 }
 
-exports.codeInfrastructure = (projet_id) => {
-    return projet_id+'-INF';
-}
-
-exports.codeEtude = (projet_id) => {
-    return projet_id+'-ETU';
-}
-
-exports.codeLotissement = (projet_id) => {
-    return projet_id+'-LOT';
-}
-
-exports.codeDrainage = (infrastructure_id) => {
-    return infrastructure_id+'-D';
-}
-
-exports.codeAssainissement = (infrastructure_id) => {
-    return infrastructure_id+'-A';
-}
-
-exports.codeEclairage = (infrastructure_id) => {
-    return infrastructure_id+'-EC';
-}
-
-exports.codeEauPotable = (infrastructure_id) => {
-    return infrastructure_id+'-EA';
-}
-
-exports.codeVoirie = (infrastructure_id) => {
-    return infrastructure_id+'-V';
+exports.codeInfrastructure = (projet_id, type) => {
+    return projet_id+'-INF-'+type.slice(0,2).toUpperCase();
 }

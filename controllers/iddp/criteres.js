@@ -5,8 +5,8 @@ const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 
 exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
-    
-    const criteres = await models.Fiche_critere.findAll({ where: { active: true } });
+
+    const criteres = await models.Fiche_critere.findAll({});
   
     if(!criteres){
        return next(new AppError('No Fiche de criteres found.', 404));
@@ -73,4 +73,30 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
         status: 'success',
     });
     
+});
+
+exports.ineligible = catchAsync( async(req, res, next) => {
+
+    const projet = await models.Projet.update({ eligible: false }, { where: { id: req.params.id } });
+  
+    if(!projet){
+       return next(new AppError('Invalid fields or No projet found with this ID', 404));
+    }
+  
+    res.status(203).json({
+        status: 'success',
+    });
+});
+
+exports.eligible = catchAsync( async(req, res, next) => {
+
+    const projet = await models.Projet.update({ eligible: true }, { where: { id: req.params.id } });
+  
+    if(!projet){
+       return next(new AppError('Invalid fields or No projet found with this ID', 404));
+    }
+  
+    res.status(203).json({
+        status: 'success',
+    });
 });

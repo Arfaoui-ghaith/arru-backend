@@ -5,7 +5,7 @@ const codification = require('../utils/codification');
 
 exports.consulter_tous_les_communes = catchAsync(async (req, res, next) => {
 
-    const communes = await models.Commune.findAll({ where: { active: true } });
+    const communes = await models.Commune.findAll({});
   
     if(!communes){
        return next(new AppError('No communes found.', 404));

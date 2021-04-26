@@ -3,37 +3,34 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Limite_quartier extends Model {
+  class Point extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.Quartier, {
+        foreignKey: 'quartier_id'
+      });
     }
   };
-  Limite_quartier.init({
+  Point.init({
     quartier_id: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
-    iat: {
+    lat: {
       type: DataTypes.DOUBLE,
       allowNull: false
     },
-    ing:{
+    lng:{
       type: DataTypes.DOUBLE,
       allowNull: false
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
     },
   }, {
     sequelize,
-    modelName: 'Limite_quartier',
-    tableName: 'limite_quartiers'
+    modelName: 'Point',
+    tableName: 'points'
   });
-  return Limite_quartier;
+  return Point;
 };

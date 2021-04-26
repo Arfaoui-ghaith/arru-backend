@@ -3,38 +3,38 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Quartier extends Model {
+  class Zone_Intervention extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.Zone_Intervention, {
-        foreignKey: 'zone_intervention_id'
+
+      this.belongsTo(models.Commune, {
+        foreignKey: 'commune_id'
       });
 
-      this.hasMany(models.Point, {
-        foreignKey: 'quartier_id',
+      this.hasOne(models.Projet, {
+        foreignKey: 'zone_intervention_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
         hooks: true,
       });
 
-      this.belongsTo(models.Point, {
-        foreignKey: 'projet_id'
+      this.hasMany(models.Quartier, {
+        foreignKey: 'zone_intervention_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
       });
+
     }
   };
-  
-  Quartier.init({
-    zone_intervention_id: {
+  Zone_Intervention.init({
+    commune_id: {
+      type: DataTypes.STRING,
       allowNull: false,
-      type: DataTypes.STRING
-    },
-    point_id: {
-      allowNull: false,
-      type: DataTypes.UUID
     },
     nom_fr: {
       allowNull: false,
@@ -44,27 +44,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-    surface: {
+    surface_totale: {
       type: DataTypes.DOUBLE,
     },
-    surface_urbanisée: {
+    surface_urbanisée_totale: {
       type: DataTypes.DOUBLE,
     },
-    nombre_logements:{
+    nombre_logements_totale: {
       type: DataTypes.INTEGER,
     },
-    nombre_habitants:{
+    nombre_habitants_totale: {
       type: DataTypes.INTEGER,
     },
   }, {
     sequelize,
-    modelName: 'Quartier',
-    tableName: 'quartiers'
+    modelName: 'Zone_Intervention',
+    tableName: 'zone_interventions'
   });
-
-  Quartier.beforeCreate((quartier, options) => {
-    
-  });
-
-  return Quartier;
+  return Zone_Intervention;
 };

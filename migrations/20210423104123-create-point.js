@@ -1,29 +1,26 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('eclairage_publics', {
+    await queryInterface.createTable('Points', {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
-      infrastructure_id: {
-        allowNull: false,
+      quartier_id: {
         type: Sequelize.STRING,
         references: {
-          model: 'infrastructures',
+          model: 'Quartiers',
           key: 'id'
         }
       },
-      p_lumineux: {
-        type: Sequelize.DOUBLE
+      lat: {
+        type: Sequelize.DOUBLE,
+        allowNull: false
       },
-      cout: {
-        type: Sequelize.DOUBLE
-      },
-      active: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
+      lng:{
+        type: Sequelize.DOUBLE,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +33,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('eclairage_publics');
+    await queryInterface.dropTable('Points');
   }
 };

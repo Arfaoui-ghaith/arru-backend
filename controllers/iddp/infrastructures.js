@@ -10,36 +10,18 @@ exports.ajout_infrastructure = catchAsync(async (req, res, next) => {
         return next(new AppError('projet not found', 404));
     }
 
-    const nouveau_infrastructure = await models.Infrastructure.create({id: codification.codeInfrastructure(req.projet) , projet_id: req.projet});
-  
-    if(!nouveau_infrastructure){ 
-       return next(new AppError('Invalid fields or duplicate infrastructure', 401));
+    if(!req.infrastructures){
+        return next(new AppError('infrastructures not found', 404));
     }
 
-    console.log(nouveau_infrastructure);
+    req.infrastructures.map(async (infra) => {
+        await models.Infrastructure.create({id: codification.codeInfrastructure(req.projet, infra.type) , ...infra, projet_id: req.projet});
+    })
+    const infrastructures = await models.Infrastructure.findAll({ where: { projet_id: req.projet } });
 
-    if(req.infrastructure && req.infrastructure.drainage){
-        await models.Drainage.create({ id: nouveau_infrastructure.id+'-'+'DR',infrastructure_id: nouveau_infrastructure.id, ...req.infrastructure.drainage })
-    }
-
-    if(req.infrastructure && req.infrastructure.assainissement){
-        await models.Assainissement.create({ id: nouveau_infrastructure.id+'-'+'AS',infrastructure_id: nouveau_infrastructure.id, ...req.infrastructure.assainissement })
-    }
-
-    if(req.infrastructure && req.infrastructure.eau_potable){
-        await models.Eau_potable.create({ id: nouveau_infrastructure.id+'-'+'EA',infrastructure_id: nouveau_infrastructure.id, ...req.infrastructure.eau_potable })
-    }
-
-    if(req.infrastructure && req.infrastructure.eclairage){
-        await models.Eclairage_public.create({ id: nouveau_infrastructure.id+'-'+'EC',infrastructure_id: nouveau_infrastructure.id, ...req.infrastructure.eclairage })
-    }
-
-    if(req.infrastructure && req.infrastructure.voirie){
-        await models.Voirie.create({ id: nouveau_infrastructure.id+'-'+'VO',infrastructure_id: nouveau_infrastructure.id, ...req.infrastructure.voirie })
-    }
-
-    res.status(203).json({
+    res.status(201).json({
         status: 'success',
+        infrastructures
     });
 
 });

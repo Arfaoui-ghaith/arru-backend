@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         hooks: true,
       });
 
-      this.hasOne(models.Fiche_critere, {
+      this.hasOne(models.Fiche_criteres, {
         foreignKey: 'gouvernorat_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -33,10 +33,6 @@ module.exports = (sequelize, DataTypes) => {
     nom_ar: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
     },
   }, {
     sequelize,

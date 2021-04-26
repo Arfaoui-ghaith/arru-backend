@@ -13,36 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Projet, {
         foreignKey: 'projet_id'
       });
-      this.hasOne(models.Assainissement, {
-        foreignKey: 'infrastructure_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-      this.hasOne(models.Drainage, {
-        foreignKey: 'infrastructure_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-      this.hasOne(models.Eau_potable, {
-        foreignKey: 'infrastructure_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-      this.hasOne(models.Eclairage_public, {
-        foreignKey: 'infrastructure_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
-      this.hasOne(models.Voirie, {
-        foreignKey: 'infrastructure_id',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
     }
   };
   Infrastructure.init({
@@ -50,10 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
+    type: {
+      type: DataTypes.ENUM,
+      values: ['Drainage','Assainissement','Eau potable','Eclairage public','Voirie']
     },
+    quantité: DataTypes.DOUBLE,
+    cout: DataTypes.DOUBLE,
   }, {
     sequelize,
     modelName: 'Infrastructure',
