@@ -10,11 +10,18 @@ exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     if(!projets){
        return next(new AppError('No projets found.', 404));
     }
+
+    let projetInfo = [];
+
+    for(const projet of projets){
+        let infrastructures = await models.Infrastructure.findAll({ where: { projet_id: projet.id } });
+        projetInfo.push({ ...projet.dataValues, infrastructures });
+    }
   
     res.status(200).json({
         status: 'success',
-        results: projets.length,
-        projets
+        results: projetInfo.length,
+        projets: projetInfo
     });
 });
 

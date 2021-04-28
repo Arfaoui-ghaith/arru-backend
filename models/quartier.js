@@ -1,4 +1,5 @@
 'use strict';
+const Zone_Intervention = require('./../models/zone_intervention');
 const {
   Model
 } = require('sequelize');
@@ -10,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      
       this.belongsTo(models.Zone_Intervention, {
         foreignKey: 'zone_intervention_id'
       });
@@ -22,8 +24,9 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Point, {
-        foreignKey: 'projet_id'
+        foreignKey: 'point_id'
       });
+
     }
   };
   
@@ -62,8 +65,18 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'quartiers'
   });
 
-  Quartier.beforeCreate((quartier, options) => {
+  Quartier.beforeCreate(async (quartier, options) => {
+    const count = await Quartier.count({ where: { zone_intervention_id: quartier.zone_intervention_id } });
+    const zone = await sequelize.query("SELECT count(*) as nbr_quartier FROM `zone_interventions` WHERE id = :zone",
+    { 
+        replacements: { zone: quartier.zone_intervention_id },
+        type: sequelize.QueryTypes.SELECT
+    });
     
+    console.log((count != 0) && (count >= zone[0].nbr_quartier));
+    if((count != 0) && (count >= zone[0].nbr_quartier)){
+      throw new Error("You cant create more !");
+    }
   });
 
   return Quartier;

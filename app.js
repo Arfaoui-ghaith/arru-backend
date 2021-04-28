@@ -15,7 +15,7 @@ const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
 const quartierRouter = require('./routes/iddp/quartierRoutes');
 const projetRouter = require('./routes/iddp/projetRoutes');
-const limites_quartiersRouter = require('./routes/iddp/limite_quartierRoutes');
+const pointsRouter = require('./routes/iddp/pointRoutes');
 const critereRouter = require('./routes/iddp/critereRoutes');
 const zoneInterventionRouter = require('./routes/iddp/zoneInterventionRoutes');
 
@@ -43,7 +43,7 @@ app.use('/api/v1/communes', communeRouter);
 app.use('/api/v1/zoneIntervention', zoneInterventionRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
-app.use('/api/v1/limites', limites_quartiersRouter);
+app.use('/api/v1/points', pointsRouter);
 app.use('/api/v1/criteres', critereRouter);
 
 /*app.all('/test', (req, res, next) => {

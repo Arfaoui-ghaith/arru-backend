@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['Drainage','Assainissement','Eau potable','Eclairage public','Voirie']
+      values: ['Drainage','Assainissement','Eau potable','Eclairage public','Voirie'],
     },
     quantité: DataTypes.DOUBLE,
     cout: DataTypes.DOUBLE,

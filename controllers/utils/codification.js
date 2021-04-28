@@ -21,11 +21,11 @@ exports.codeZone_Intervention=  (commune_id, nom_zone) => {
     return (commune_id+'-'+nom.toUpperCase());
 }
 
-exports.codeQuartier =  (commune_id,nom_quartier) => {
+exports.codeQuartier =  (zone_intervention_id,nom_quartier) => {
     if(nom_quartier.slice(0,3).includes(' ')){
-        return commune_id+'-'+nom_quartier.slice(nom_quartier.indexOf(' ')+1,3).trim();
+        return zone_intervention_id+'-'+nom_quartier.slice(nom_quartier.indexOf(' ')+1,3).trim();
     }
-    return commune_id+'-'+nom_quartier.slice(0,3).trim().toUpperCase();
+    return zone_intervention_id+'-'+nom_quartier.slice(0,3).trim().toUpperCase();
 }
 
 exports.codeCritere =  async (gouvernorat_id) => {

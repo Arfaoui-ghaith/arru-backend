@@ -75,6 +75,10 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
     
 });
 
+exports.test_eligible = catchAsync( async(req, res, next) => {
+    
+});
+
 exports.ineligible = catchAsync( async(req, res, next) => {
 
     const projet = await models.Projet.update({ eligible: false }, { where: { id: req.params.id } });

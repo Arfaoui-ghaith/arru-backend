@@ -25,3 +25,16 @@ exports.ajout_infrastructure = catchAsync(async (req, res, next) => {
     });
 
 });
+
+exports.update_infrastructure = catchAsync(async (req, res, next) => {
+
+    const infrastructure = await models.Infrastructure.update(req.body, { where: { id: req.params.id } });
+  
+    if(!infrastructure){
+       return next(new AppError('Invalid fields or No infrastructure found with this ID', 404));
+    }
+  
+    res.status(203).json({
+        status: 'success',
+    });
+})
