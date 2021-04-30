@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express().use('*', cors());
 
+const compression = require('compression');
 const AppError = require('./utils/appError');
 const utilisateurRouter = require('./routes/access_permissions/utilisateurRoutes');
 const roleRouter = require('./routes/access_permissions/roleRoutes');
@@ -20,11 +21,8 @@ const critereRouter = require('./routes/iddp/critereRoutes');
 const zoneInterventionRouter = require('./routes/iddp/zoneInterventionRoutes');
 
 const globalErrorHandler = require('./controllers/errorController.js');
-const morgan = require('morgan');
 
-if (process.env.NODE_ENV === 'development') {
-    //app.use(morgan('dev'));
-}
+app.use(compression());
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(`${__dirname}/storage`));
