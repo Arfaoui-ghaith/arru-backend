@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "admin",
-    "password": "admin123",
-    "database": "priqhdb",
-    "host": "127.0.0.1",
+    "username": "abdfxjrk_test",
+    "password": "141!7Lik1DMh",
+    "database": "abdfxjrk_test",
+    "host": "212.129.49.175",
     "dialect": "mysql"
   },
   "test": {
