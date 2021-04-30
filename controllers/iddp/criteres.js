@@ -6,7 +6,7 @@ const AppError = require('../../utils/appError');
 
 exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
 
-    const criteres = await models.Fiche_critere.findAll({});
+    const criteres = await models.Fiche_criteres.findAll({});
   
     if(!criteres){
        return next(new AppError('No Fiche de criteres found.', 404));
@@ -22,7 +22,7 @@ exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
 
 exports.consulter_critere = catchAsync(async (req, res, next) => {
 
-    const critere = await models.Fiche_critere.findByPk(req.params.id);
+    const critere = await models.Fiche_criteres.findByPk(req.params.id);
   
     if(!critere){
       return next(new AppError('No critere with this ID.',404));
@@ -37,7 +37,7 @@ exports.consulter_critere = catchAsync(async (req, res, next) => {
 
 exports.ajout_critere = catchAsync(async (req, res, next) => {
 
-    const nouveau_critere = await models.Fiche_critere.create({id: codification.codeCritere(req.body.gouvernorat_id), ...req.body});
+    const nouveau_critere = await models.Fiche_criteres.create({id: codification.codeCritere(req.body.gouvernorat_id), ...req.body});
   
     if(!nouveau_critere){
        return next(new AppError('Invalid fields or duplicate critere', 401));
@@ -52,7 +52,7 @@ exports.ajout_critere = catchAsync(async (req, res, next) => {
 
 exports.modifier_critere = catchAsync(async(req, res, next) => {
 
-    const fiche_critere = await models.Fiche_critere.findOne({id: req.params.id });
+    const fiche_critere = await models.Fiche_criteres.findOne({id: req.params.id });
 
     if(!fiche_critere){
         return next(new AppError('Invalid fields or No projet found with this ID', 404));
@@ -63,7 +63,7 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
 
     req.body.fiche_critere.id = codification.codeCritere(fiche_critere.gouvernorat_id);
   
-    const critere = await models.Fiche_critere.create(req.body.fiche_critere);
+    const critere = await models.Fiche_criteres.create(req.body.fiche_critere);
 
     if(!critere){
         return next(new AppError('Invalid fields or duplicate critere', 401));

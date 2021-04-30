@@ -3,13 +3,13 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn(
-      'Quartiers', // table name
+      'quartiers', // table name
       'point_id', // new field name
       {
         allowNull: false,
         type: Sequelize.UUID,
         references: {
-          model: 'Points',
+          model: 'points',
           key: 'id'
         }
       },
@@ -17,6 +17,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeColumn('Quartiers', 'point_id')
+    await queryInterface.removeColumn('quartiers', 'point_id')
   }
 };

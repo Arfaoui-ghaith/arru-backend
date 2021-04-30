@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.addColumn(
-      'Zone_Interventions', // table name
+      'zone_interventions', // table name
       'nbr_quartier', // new field name
       {
         type: Sequelize.INTEGER,
@@ -13,6 +13,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeColumn('Zone_Interventions', 'nbr_quartier')
+    await queryInterface.removeColumn('zone_interventions', 'nbr_quartier')
   }
 };

@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Gouvernorats', {
+    await queryInterface.createTable('gouvernorats', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -24,8 +24,8 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
-    
-    await queryInterface.bulkInsert('Gouvernorats', [
+
+    await queryInterface.bulkInsert('gouvernorats', [
     {
         id: "ARI",
         nom_fr: "Ariana",
@@ -197,6 +197,6 @@ module.exports = {
     ]);
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Gouvernorats');
+    await queryInterface.dropTable('gouvernorats');
   }
 };
