@@ -38,7 +38,7 @@ apollo.applyMiddleware({ app });
 const ws = createServer(app);
 apollo.installSubscriptionHandlers(ws);
 
-ws.listen({ port: 4000 }, () =>{
+ws.listen({ port: process.env.PORT || 4000 }, () =>{
   console.log(`GraphQL API URL: http://localhost:4000/graphql`);
   console.log(`Subscriptions URL: ws://localhost:4000/graphql`);
   sequelize.authenticate().then(() => console.log('Connection has been established successfully.'))
