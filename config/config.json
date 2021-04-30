@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "abdfxjrk_test",
-    "password": "141!7Lik1DMh",
-    "database": "abdfxjrk_test",
-    "host": "212.129.49.175",
+    "username": "wHzk6Pc8ny",
+    "password": "10G08nrYQv",
+    "database": "wHzk6Pc8ny",
+    "host": "37.59.55.185",
     "dialect": "mysql"
   },
   "test": {
@@ -14,10 +14,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "abdfxjrk_test",
-    "password": "141!7Lik1DMh",
-    "database": "abdfxjrk_test",
-    "host": "212.129.49.175",
+    "username": "wHzk6Pc8ny",
+    "password": "10G08nrYQv",
+    "database": "wHzk6Pc8ny",
+    "host": "37.59.55.185",
     "dialect": "mysql"
   }
 }
