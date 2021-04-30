@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const contextMiddleware = require('./utils/contextMiddleware');
 const { createServer } = require('http');
 //const contextMiddleware = require('./utils/contextMiddleware');
-
+const ip = require('what-is-my-ip-address');
 process.on('uncaughtException', (err) => {
   console.log(err);
   console.log('UNCAUGHT EXCEPTION! Shutting down....');
@@ -39,6 +39,21 @@ const ws = createServer(app);
 apollo.installSubscriptionHandlers(ws);
 
 ws.listen({ port: 4000 }, () =>{
+  ip.v4()
+  .then((ip) => {
+    console.log(ip);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+  ip.v6()
+  .then((ip) => {
+    console.log(ip);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
   console.log(`GraphQL API URL: http://localhost:4000/graphql`);
   console.log(`Subscriptions URL: ws://localhost:4000/graphql`);
   sequelize.authenticate().then(() => console.log('Connection has been established successfully.'))
