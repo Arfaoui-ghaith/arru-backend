@@ -15,7 +15,7 @@ exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
         let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
         let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
         console.log(center);
-        let quartierInfo = { ...quartier.dataValues, latlngs};
+        let quartierInfo = { ...quartier.dataValues, center: center.dataValues, latlngs};
         quartiersInfos.push(quartierInfo)
     };
   
