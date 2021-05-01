@@ -78,12 +78,12 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
-    for(const quartier of req.body.quartiers){
-        const center = await models.Point.create({id: uuidv4(),...req.body.center});
+    for(const q of req.body){
+        const center = await models.Point.create({id: uuidv4(),...q.center});
 
-        const quartier = await models.Quartier.create({ id: codification.codeQuartier(req.body.zone_intervention_id, req.body.quartier.nom_fr), zone_intervention_id: req.body.zone_intervention_id, point_id: center.id ,...req.body.quartier});
+        const quartier = await models.Quartier.create({ id: codification.codeQuartier(q.zone_intervention_id, q.quartier.nom_fr), zone_intervention_id: q.zone_intervention_id, point_id: center.id ,...q.quartier});
 
-        req.body.latlngs.forEach(async (latlng) => {
+        q.latlngs.forEach(async (latlng) => {
             await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
         });
     }
