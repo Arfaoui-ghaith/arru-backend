@@ -10,11 +10,25 @@ exports.consulter_tous_les_zone_interventions = catchAsync(async (req, res, next
     if(!zone_interventions){
        return next(new AppError('No zone_interventions found.', 404));
     }
+
+    let zones = [];
+    for(const zone of zone_interventions){
+        const gouvernorat = await models.Gouvernorat.findByPk(zone.id.slice(0,3));
+        
+        const commune = await models.Commune.findByPk(zone.id.slice(0,8));
+        
+        const quartiers = await models.Quartier.findAll({ where: { zone_intervention_id: zone.id }, attributes: [['nom_fr','nom']] });
+        console.log(quartiers);
+
+        let obj = { gouvernorat: gouvernorat.nom_fr, commune: commune.nom_fr, quartiers, ...zone.dataValues }
+        console.log(obj);
+        zones.push(obj);
+    }
   
     res.status(200).json({
         status: 'success',
-        results: zone_interventions.length,
-        zone_interventions
+        results: zones.length,
+        zone_interventions: zones
     });
 
 });
