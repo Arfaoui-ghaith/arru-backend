@@ -12,6 +12,7 @@ router.route('/')
 
 router.route('/:id')
     .get(zone_interventionController.consulter_zone_intervention)
-    .put(zone_interventionController.modifier_zone_intervention);
+    .put(zone_interventionController.modifier_zone_intervention)
+    .delete(zone_interventionController.supprimer_zone_intervention);
 
 module.exports = router;

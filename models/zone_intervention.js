@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     nbr_quartier: {
       type: DataTypes.INTEGER,
-      defaultValue: 1
+      defaultValue: 0
     },
     surface_totale: {
       type: DataTypes.DOUBLE,
