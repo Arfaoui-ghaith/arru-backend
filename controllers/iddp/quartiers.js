@@ -78,7 +78,7 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
-    for(const q of req.body){
+    for(const q of req.body.quartiers){
         const center = await models.Point.create({id: uuidv4(),...q.center});
 
         const quartier = await models.Quartier.create({ id: codification.codeQuartier(q.zone_intervention_id, q.quartier.nom_fr), zone_intervention_id: q.zone_intervention_id, point_id: center.id ,...q.quartier});
