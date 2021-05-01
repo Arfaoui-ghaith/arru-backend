@@ -81,7 +81,7 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
-    req.body.quartiers.map((q) =>{
+    req.body.quartiers.map(async (q) =>{
         console.log("im here !!");
         const center = await models.Point.create({id: uuidv4(),...q.center});
 
