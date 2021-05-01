@@ -15,8 +15,11 @@ exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
 
     const utilisateurs = await models.Utilisateur.findAll({});
 
+    if(!utilisateurs){
+        return next(new AppError('No users found.', 404));
+    }
     var users = []
-    utilisateurs.forEach( async (user,index) => {
+    for(const user of utilisateurs) {
         let obj = {id: user.id, nom: user.nom, prenom: user.prenom, cin: user.cin, email: user.email, image: user.image, telephone: user.telephone};
         const roles = await models.sequelize.query("SELECT r.titre, (SELECT s.titre from `specifications` as s where ur.specification_id = s.id ) as specification FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
         { 
@@ -26,23 +29,13 @@ exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
 
         obj.roles = roles;
         users.push(obj);
-        
-        if(index >= (utilisateurs.length - 1)){
-            res.status(200).json({
-                status: 'success',
-                results: users.length,
-                utilisateurs: users
-            });
-        }
-    });
-
-    
-    pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
-  
-    if(!utilisateurs){
-       return next(new AppError('No users found.', 404));
     }
-    
+    //pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
+    res.status(200).json({
+        status: 'success',
+        results: users.length,
+        utilisateurs: users
+    });
 });
 
 exports.consulter_utilisateur = catchAsync(async (req, res, next) => {
