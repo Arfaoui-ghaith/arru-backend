@@ -78,7 +78,7 @@ exports.modifier_zone_intervention = catchAsync(async(req, res, next) => {
 exports.supprimer_zone_intervention = catchAsync(async(req, res, next) => {
 
     await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
-    const zone_intervention = await models.Zone_Intervention.delete({ where: { id: req.params.id } });
+    const zone_intervention = await models.Zone_Intervention.destroy({ where: { id: req.params.id } });
 
     if(!zone_intervention){
        return next(new AppError('No zone_intervention found with this ID', 404));
