@@ -36,3 +36,7 @@ exports.codeCritere =  async (gouvernorat_id) => {
 exports.codeInfrastructure = (projet_id, type) => {
     return projet_id+'-INF-'+type.slice(0,2).toUpperCase();
 }
+
+exports.codeEtude = (projet_id) => {
+    return projet_id+'-ET';
+}

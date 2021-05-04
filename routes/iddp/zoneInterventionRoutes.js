@@ -10,6 +10,9 @@ router.route('/')
     .get(zone_interventionController.consulter_tous_les_zone_interventions)
     .post(zone_interventionController.ajout_zone_intervention);
 
+router.route('/sans_projet')
+    .get(zone_interventionController.consulter_zones_interventions_sans_projet);
+    
 router.route('/:id')
     .get(zone_interventionController.consulter_zone_intervention)
     .put(zone_interventionController.modifier_zone_intervention)

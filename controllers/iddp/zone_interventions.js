@@ -2,6 +2,7 @@ const models = require('../../models/index');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const codification = require('../utils/codification');
+const { Op } = require("sequelize");
 
 exports.consulter_tous_les_zone_interventions = catchAsync(async (req, res, next) => {
 
@@ -29,6 +30,29 @@ exports.consulter_tous_les_zone_interventions = catchAsync(async (req, res, next
         status: 'success',
         results: zones.length,
         zone_interventions: zones
+    });
+
+});
+
+exports.consulter_zones_interventions_sans_projet = catchAsync(async (req, res, next) => {
+
+    const projets = await models.Projet.findAll({ attributes: ['zone_intervention_id'] });
+    let projet_ids = [];
+
+    for(const projet of projets){
+        projet_ids.push(projet.zone_intervention_id);
+    }
+
+    const zone_interventions = await models.Zone_Intervention.findAll({ where: { id: { [Op.notIn]: projet_ids } } });
+  
+    if(!zone_interventions){
+       return next(new AppError('No zone_interventions found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: zone_interventions.length,
+        zone_interventions
     });
 
 });

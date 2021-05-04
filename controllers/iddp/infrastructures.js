@@ -6,22 +6,18 @@ const AppError = require('../../utils/appError');
 
 exports.ajout_infrastructure = catchAsync(async (req, res, next) => {
 
-    if(!req.projet){
-        return next(new AppError('projet not found', 404));
-    }
-
-    if(!req.infrastructures){
-        return next(new AppError('infrastructures not found', 404));
-    }
+    const etude = await models.Etude.create({ id: codification.codeEtude(req.projet), projet_id: req.projet, ...req.etude });
 
     req.infrastructures.map(async (infra) => {
+        console.log({id: codification.codeInfrastructure(req.projet, infra.type) , ...infra, projet_id: req.projet});
         await models.Infrastructure.create({id: codification.codeInfrastructure(req.projet, infra.type) , ...infra, projet_id: req.projet});
-    })
-    const infrastructures = await models.Infrastructure.findAll({ where: { projet_id: req.projet } });
+    });
+
+    //const infrastructures = await models.Infrastructure.findAll({ where: { projet_id: req.projet } });
 
     res.status(201).json({
         status: 'success',
-        infrastructures
+        //infrastructures
     });
 
 });
