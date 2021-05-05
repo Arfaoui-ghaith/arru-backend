@@ -29,7 +29,7 @@ exports.codeQuartier =  (zone_intervention_id,nom_quartier) => {
 }
 
 exports.codeCritere =  async (gouvernorat_id) => {
-    const count = await models.Fiche_critere.count({ where: { gouvernorat_id } });
+    const count = await models.Fiche_criteres.count({ where: { gouvernorat_id } });
     return gouvernorat_id+'-FC'+count+1;
 }
 

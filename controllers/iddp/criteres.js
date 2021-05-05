@@ -35,9 +35,24 @@ exports.consulter_critere = catchAsync(async (req, res, next) => {
 
 });
 
+exports.consulter_critere_par_gouvernorat = catchAsync(async (req, res, next) => {
+
+    const critere = await models.Fiche_criteres.findAll({ limit: 1, where: { gouvernorat_id: req.params.id}, order: [ [ 'createdAt', 'DESC' ]]});
+  
+    if(!critere){
+      return next(new AppError('No critere with this ID.',404));
+    }
+   
+    res.status(200).json({
+      status: 'success',
+      critere: critere[0]
+    });
+
+});
+
 exports.ajout_critere = catchAsync(async (req, res, next) => {
 
-    const nouveau_critere = await models.Fiche_criteres.create({id: codification.codeCritere(req.body.gouvernorat_id), ...req.body});
+    const nouveau_critere = await models.Fiche_criteres.create({id: await codification.codeCritere(req.body.gouvernorat_id), ...req.body});
   
     if(!nouveau_critere){
        return next(new AppError('Invalid fields or duplicate critere', 401));

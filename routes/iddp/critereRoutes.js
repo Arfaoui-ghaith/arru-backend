@@ -14,5 +14,8 @@ router.route('/:id')
     .get(critereController.consulter_critere)
     .put(critereController.modifier_critere);
 
+router.route('/gouvernorat/:id')
+    .get(critereController.consulter_critere_par_gouvernorat);
+
 
 module.exports = router;
