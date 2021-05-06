@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     return Promise.all([
     queryInterface.changeColumn('fiche_criteres', 'nbr_quartier', {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       defaultValue: 0,
     }),
     queryInterface.changeColumn('fiche_criteres', 'surface_totale', {

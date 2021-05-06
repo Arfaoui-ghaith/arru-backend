@@ -67,21 +67,10 @@ exports.ajout_critere = catchAsync(async (req, res, next) => {
 
 exports.modifier_critere = catchAsync(async(req, res, next) => {
 
-    const fiche_critere = await models.Fiche_criteres.findOne({id: req.params.id });
+    const fiche_critere = await models.Fiche_criteres.update(req.body, { where: {id: req.params.id } });
 
     if(!fiche_critere){
         return next(new AppError('Invalid fields or No projet found with this ID', 404));
-    }
-
-    fiche_critere.active = false;
-    await fiche_critere.save();
-
-    req.body.fiche_critere.id = codification.codeCritere(fiche_critere.gouvernorat_id);
-  
-    const critere = await models.Fiche_criteres.create(req.body.fiche_critere);
-
-    if(!critere){
-        return next(new AppError('Invalid fields or duplicate critere', 401));
     }
   
     res.status(203).json({
@@ -91,7 +80,26 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
 });
 
 exports.test_eligible = catchAsync( async(req, res, next) => {
-    
+    const projets = await models.sequelize.query("SELECT p.id FROM projets as p, fiche_criteres as f, zone_interventions as z, communes as c, gouvernorats as g WHERE z.id = p.zone_intervention_id and z.commune_id = c.id and c.gouvernorat_id = g.id and g.id = f.gouvernorat_id and z.surface_totale >= f.surface_totale and z.surface_urbanisée_totale >= f.surface_urbanisée_totale and z.nombre_logements_totale >= f.nombre_logements_totale and z.nombre_habitants_totale >= f.nombre_habitants_totale and z.nbr_quartier >= f.nbr_quartier and p.eligible = 0",
+    {
+        type: models.sequelize.QueryTypes.SELECT 
+    });
+
+    if(!projets){
+        return next(new AppError('No projets found', 404));
+    }
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+
+    projets.map(async(projet) => {
+        await models.Projet.update({ eligible: true },{ where: { id: projet.id } });
+    });
+
+    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+
+    res.status(203).json({
+        status: 'success'
+    });
 });
 
 exports.ineligible = catchAsync( async(req, res, next) => {

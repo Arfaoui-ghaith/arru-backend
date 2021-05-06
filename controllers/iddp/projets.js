@@ -115,3 +115,21 @@ exports.modifier_projet = catchAsync(async(req, res, next) => {
     });
     
 });
+
+exports.consulter_les_projets_eligible = catchAsync(async(req,res,next) => {
+    const projets = await models.Projet.findAll({ where: { eligible: true } });
+
+    res.status(203).json({
+        status: 'success',
+        projets
+    });
+});
+
+exports.consulter_les_projets_ineligible = catchAsync(async(req,res,next) => {
+    const projets = await models.Projet.findAll({ where: { eligible: false } });
+
+    res.status(203).json({
+        status: 'success',
+        projets
+    });
+})
