@@ -36,7 +36,10 @@ exports.consulter_tous_les_quartiers_par_gouvernourat = catchAsync(async (req, r
 
     for(const quartier of quartiers){
         let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
-        let quartierInfo = { ...quartier.dataValues, latlngs};
+        let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
+        let zone_intervention = await models.Zone_Intervention.findByPk(quartier.zone_intervention_id,{ attributes: ['nom_fr','nom_ar'] });
+        console.log(center);
+        let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
         quartiersInfos.push(quartierInfo)
     };
   
@@ -55,7 +58,10 @@ exports.consulter_tous_les_quartiers_par_commune = catchAsync(async (req, res, n
 
     for(const quartier of quartiers){
         let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
-        let quartierInfo = { ...quartier.dataValues, latlngs};
+        let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
+        let zone_intervention = await models.Zone_Intervention.findByPk(quartier.zone_intervention_id,{ attributes: ['nom_fr','nom_ar'] });
+        console.log(center);
+        let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
         quartiersInfos.push(quartierInfo)
     };
   
