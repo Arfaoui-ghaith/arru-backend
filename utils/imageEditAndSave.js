@@ -35,3 +35,25 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
 
     next();
   });
+
+const uploadBailleur = multer({
+    dest: 'public/img/bailleurs',
+    storage: multerStorage,
+    fileFilter: multerFilter,
+  });
+
+exports.uploadBailleurPhoto = uploadBailleur.single('image');
+
+exports.resizeBailleurPhoto = catchAsync(async (req, res, next) => {
+
+    if (!req.file) return next();
+
+    req.file.filename = `bailleur-${Date.now()}.jpeg`;
+
+    await sharp(req.file.buffer)
+      .toFormat('jpeg')
+      .jpeg({ quality: 100 })
+      .toFile(`storage/img/bailleurs/${req.file.filename}`);
+
+    next();
+  });

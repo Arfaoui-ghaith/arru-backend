@@ -27,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasOne(models.Memoire, {
+        foreignKey: 'projet_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Projet.init({
