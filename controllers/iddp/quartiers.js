@@ -7,9 +7,12 @@ const { Op } = require("sequelize");
 
 exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
 
-    const quartiers = await models.Quartier.findAll({});
+    const quartiers = await models.Quartier.findAll({
+        include: { model: models.Point, attributes: { exclude: ['', 'createdAt', 'updatedAt'] } },
+        attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt'] }
+    });
 
-    let quartiersInfos = [];
+    /*let quartiersInfos = [];
 
     for(const quartier of quartiers){
         let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
@@ -18,12 +21,12 @@ exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
         console.log(center);
         let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
         quartiersInfos.push(quartierInfo)
-    };
+    };*/
   
     res.status(200).json({
         status: 'success',
-        results: quartiersInfos.length,
-        quartiers: quartiersInfos
+        results: quartiers.length,
+        quartiers: quartiers
     });
 
 });
@@ -86,18 +89,14 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 });
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
+    const center = await models.Point.create({id: uuidv4(),...req.body.center});
 
-    req.body.quartiers.map(async (q) =>{
-        console.log("im here !!");
-        const center = await models.Point.create({id: uuidv4(),...q.center});
+    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.commune_id, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
 
-        const quartier = await models.Quartier.create({ id: codification.codeQuartier(q.zone_intervention_id, q.quartier.nom_fr), zone_intervention_id: q.zone_intervention_id, point_id: center.id ,...q.quartier});
-
-        q.latlngs.forEach(async (latlng) => {
-            await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
-        });
+    req.body.latlngs.forEach(async (latlng) => {
+        await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
     });
-  
+
     res.status(201).json({
         status: 'success'
     });

@@ -1,4 +1,5 @@
 'use strict';
+
 const {
   Model
 } = require('sequelize');
@@ -13,11 +14,22 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Gouvernorat, {
         foreignKey: 'gouvernorat_id'
       });
+
+      this.hasMany(models.Projet, {
+        foreignKey: 'commune_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Commune.init({
-    gouvernorat_id: {
+    code: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    gouvernorat_id: {
+      type: DataTypes.UUID,
       allowNull: false,
     },
     nom_fr: {
@@ -33,5 +45,6 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Commune',
     tableName: 'communes'
   });
+
   return Commune;
 };

@@ -5,7 +5,7 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
+     
         primaryKey: true,
       },
       utilisateur_id: {
@@ -14,7 +14,9 @@ module.exports = {
         references: {
           model: 'utilisateurs',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       role_id: {
         type: Sequelize.UUID,
@@ -22,7 +24,9 @@ module.exports = {
         references: {
           model: 'roles',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       specification_id: {
         type: Sequelize.UUID,

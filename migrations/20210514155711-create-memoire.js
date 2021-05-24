@@ -5,24 +5,18 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
+        
         primaryKey: true,
       },
       projet_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'projets',
           key: 'id'
-        }
-      },
-      source_financement: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model: 'bailleur_fonds',
-          key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       htva: {
         type: Sequelize.DOUBLE,
@@ -43,15 +37,6 @@ module.exports = {
       timbre_fiscale: {
         type: Sequelize.DOUBLE,
         defaultValue: 0.0,
-      },
-      brut: {
-        type: Sequelize.DOUBLE,
-        defaultValue: 0.0,
-      },
-      composante: {
-        type: Sequelize.ENUM,
-        values: ['Infrastructure','Etude'],
-        allowNull: false
       },
       createdAt: {
         allowNull: false,

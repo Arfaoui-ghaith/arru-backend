@@ -20,12 +20,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Financement.init({
-    bailleur_id: {
+    code: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    bailleur_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
     memoire_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
     },
     montant: {
@@ -35,7 +39,8 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       type: DataTypes.ENUM,
       values: ['prévisionnel','deblocage','reliquat'],
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
   }, {
     sequelize,

@@ -3,16 +3,19 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('points', {
       id: {
-        allowNull: false,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        
         primaryKey: true,
-        type: Sequelize.UUID
       },
       quartier_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         references: {
           model: 'quartiers',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       lat: {
         type: Sequelize.DOUBLE,

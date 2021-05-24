@@ -17,22 +17,25 @@ module.exports = (sequelize, DataTypes) => {
   };
   Fiche_criteres.init({
     gouvernorat_id: {
-      type: DataTypes.STRING,
-    },
-    nbr_quartier: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true
     },
     surface_totale: {
       type: DataTypes.DOUBLE,
+      defaultValue: 0
     },
     surface_urbanisée_totale: {
       type: DataTypes.DOUBLE,
+      defaultValue: 0
     },
     nombre_logements_totale:{
       type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     nombre_habitants_totale:{
       type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     sequelize,

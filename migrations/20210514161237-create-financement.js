@@ -5,8 +5,12 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
+        
         primaryKey: true,
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       bailleur_id: {
         type: Sequelize.UUID,
@@ -14,7 +18,9 @@ module.exports = {
         references: {
           model: 'bailleur_fonds',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       memoire_id: {
         type: Sequelize.UUID,
@@ -22,7 +28,9 @@ module.exports = {
         references: {
           model: 'memoires',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       montant: {
         type: Sequelize.DOUBLE
@@ -30,7 +38,8 @@ module.exports = {
       type: {
         type: Sequelize.ENUM,
         values: ['prévisionnel','deblocage','reliquat'],
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       createdAt: {
         allowNull: false,

@@ -5,22 +5,19 @@ module.exports = {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false,
+      
         primaryKey: true,
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       nom: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      abreviation: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-      },
-      image: {
-        type: Sequelize.STRING
-      },
+      image: Sequelize.STRING,
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

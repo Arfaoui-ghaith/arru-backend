@@ -16,9 +16,8 @@ const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
 const quartierRouter = require('./routes/iddp/quartierRoutes');
 const projetRouter = require('./routes/iddp/projetRoutes');
-const pointsRouter = require('./routes/iddp/pointRoutes');
+
 const critereRouter = require('./routes/iddp/critereRoutes');
-const zoneInterventionRouter = require('./routes/iddp/zoneInterventionRoutes');
 const bailleur_fondRouter = require('./routes/financement/bailleur_fondRoutes');
 const memoireRouter = require('./routes/financement/memoireRoutes');
 const financementRouter = require('./routes/financement/financementRoutes');
@@ -41,10 +40,9 @@ app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 //iddp
 app.use('/api/v1/gouvernorats', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);
-app.use('/api/v1/zoneIntervention', zoneInterventionRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
-app.use('/api/v1/points', pointsRouter);
+
 app.use('/api/v1/criteres', critereRouter);
 //financement
 app.use('/api/v1/bailleurs', bailleur_fondRouter);

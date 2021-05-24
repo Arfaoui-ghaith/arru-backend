@@ -3,17 +3,23 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('communes', {
       id: {
-        allowNull: false,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
-        type: Sequelize.STRING
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       gouvernorat_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'gouvernorats',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       nom_fr: {
         type: Sequelize.STRING,

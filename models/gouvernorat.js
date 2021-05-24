@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Gouvernorat.init({
+    code: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     nom_fr: {
       type: DataTypes.STRING,
       allowNull: false,

@@ -16,13 +16,18 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Infrastructure.init({
-    projet_id: {
+    code: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    projet_id: {
+      type: DataTypes.UUID,
       allowNull: false,
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['Drainage','Assainissement','Eau potable','Eclairage public','Voirie'],
+      values: ['drainage des eaux pluviales','assainissement','eau potable','eclairage public','voirie'],
+      unique: true
     },
     quantité: DataTypes.DOUBLE,
     cout: DataTypes.DOUBLE,

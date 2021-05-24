@@ -24,14 +24,21 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasOne(models.Decompte, {
+        foreignKey: 'memoire_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Memoire.init({
-    projet_id: {
+    code: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    source_financement: {
+    projet_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
@@ -54,15 +61,6 @@ module.exports = (sequelize, DataTypes) => {
     timbre_fiscale: {
       type: DataTypes.DOUBLE,
       defaultValue: 0.0,
-    },
-    brut: {
-      type: DataTypes.DOUBLE,
-      defaultValue: 0.0,
-    },
-    composante: {
-      type: DataTypes.ENUM,
-      values: ['Infrastructure','Etude'],
-      allowNull: false,
     },
   }, {
     sequelize,

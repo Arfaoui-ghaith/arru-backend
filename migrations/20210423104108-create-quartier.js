@@ -3,26 +3,43 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('quartiers', {
       id: {
-        allowNull: false,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        
         primaryKey: true,
-        type: Sequelize.STRING
       },
-      zone_intervention_id: {
-        allowNull: false,
-        type: Sequelize.STRING,
+      projet_id: {
+        
+        type: Sequelize.UUID,
         references: {
-          model: 'zone_interventions',
+          model: 'projets',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       /*point_id: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         references: {
-          model: 'Points',
+          model: 'points',
           key: 'id'
         }
       },*/
+      commune_id: {
+        allowNull: false,
+        type: Sequelize.UUID,
+        references: {
+          model: 'communes',
+          key: 'id'
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       nom_fr: {
         allowNull: false,
         type: Sequelize.STRING
@@ -33,15 +50,6 @@ module.exports = {
       },
       surface: {
         type: Sequelize.DOUBLE,
-      },
-      surface_urbanisée: {
-        type: Sequelize.DOUBLE,
-      },
-      nombre_logements:{
-        type: Sequelize.INTEGER,
-      },
-      nombre_habitants:{
-        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,

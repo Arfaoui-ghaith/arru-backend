@@ -16,24 +16,18 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
-      this.hasMany(models.Memoire, {
-        foreignKey: 'source_financement',
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        hooks: true,
-      });
+      
     }
   };
   Bailleur_fonds.init({
+    code: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     nom: {
       type: DataTypes.STRING(8),
       allowNull: false,
-      unique: {msg: "L'abréviation doit être unique "},
-    },
-    abreviation: {
-      type: DataTypes.STRING(8),
-      allowNull: false,
-      unique: {msg: "L'abréviation doit être unique "},
+      unique: {msg: "Le nom doit être unique "},
     },
     image: DataTypes.STRING
   }, {

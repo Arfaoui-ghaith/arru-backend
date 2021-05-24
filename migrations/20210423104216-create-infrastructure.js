@@ -3,21 +3,29 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('infrastructures', {
       id: {
-        allowNull: false,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        
         primaryKey: true,
-        type: Sequelize.STRING
+      },
+      code: {
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       projet_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: 'projets',
           key: 'id'
-        }
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       type: {
         type: Sequelize.ENUM,
-        values: ['Drainage','Assainissement','Eau potable','Eclairage public','Voirie']
+        values: ['drainage des eaux pluviales','assainissement','eau potable','eclairage public','voirie'],
+        unique: true
       },
       quantité: Sequelize.DOUBLE,
       cout: Sequelize.DOUBLE,

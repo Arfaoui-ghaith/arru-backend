@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Quartier, {
         foreignKey: 'quartier_id'
       });
+
+      this.hasOne(models.Quartier, {
+        foreignKey: 'point_id'
+      });
     }
   };
   Point.init({

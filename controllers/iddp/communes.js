@@ -2,16 +2,17 @@ const models = require('./../../models/index');
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('../utils/codification');
+const { v4: uuidv4 } = require('uuid');
 
 exports.consulter_tous_les_communes = catchAsync(async (req, res, next) => {
 
     console.log("hello");
-    const communes = await models.Commune.findAll({});
-  
+    const communes = await models.Commune.findAll({ 
+        include: { model: models.Gouvernorat, attributes: { exclude: ['createdAt', 'updatedAt'] } }, 
+        attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] } });
     if(!communes){
        return next(new AppError('No communes found.', 404));
     }
-  
     res.status(200).json({
         status: 'success',
         results: communes.length,
@@ -43,7 +44,10 @@ exports.consulter_les_projets_par_commune = catchAsync(async (req, res, next) =>
 });
 
 exports.consulter_commune = catchAsync(async (req, res, next) => {
-    const commune = await models.Commune.findByPk(req.params.id);
+    const commune = await models.Commune.findByPk(req.params.id, { 
+        include: { model: models.Gouvernorat, attributes: { exclude: ['createdAt', 'updatedAt'] } }, 
+        attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] }
+     });
   
     if(!commune){
       return next(new AppError('No commune with this ID.',404));
@@ -56,8 +60,7 @@ exports.consulter_commune = catchAsync(async (req, res, next) => {
 });
 
 exports.ajout_commune = catchAsync(async (req, res, next) => {
-
-    const nouveau_commune = await models.Commune.create({id: codification.codeCommune(req.body.gouvernorat_id,req.body.nom_fr),...req.body});
+    const nouveau_commune = await models.Commune.create({id: uuidv4(), code: codification.codeCommune(req.body.gouvernorat_code,req.body.nom_fr),...req.body});
   
     if(!nouveau_commune){
        return next(new AppError('Invalid fields or duplicate commune', 401));
@@ -71,9 +74,9 @@ exports.ajout_commune = catchAsync(async (req, res, next) => {
 
 exports.modifier_commune = catchAsync(async(req, res, next) => {
 
-    const utlisateur = await models.Commune.update(req.body, { where: { id: req.params.id } });
+    const commune = await models.Commune.update(req.body, { where: { id: req.params.id } });
   
-    if(!utlisateur){
+    if(!commune){
        return next(new AppError('Invalid fields or No commune found with this ID', 404));
     }
   
