@@ -11,16 +11,18 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      
       this.belongsTo(models.Commune, {
+        as: 'communetoQuartier',
         foreignKey: 'commune_id'
       });
 
       this.belongsTo(models.Projet, {
+        as: 'quartiertoProjet',
         foreignKey: 'projet_id'
       });
 
       this.hasMany(models.Point, {
+        as: 'latlngs',
         foreignKey: 'quartier_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -28,9 +30,9 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Point, {
+        as: 'center',
         foreignKey: 'point_id'
       });
-
     }
   };
   

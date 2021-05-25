@@ -8,25 +8,17 @@ const { Op } = require("sequelize");
 exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
 
     const quartiers = await models.Quartier.findAll({
-        include: { model: models.Point, attributes: { exclude: ['', 'createdAt', 'updatedAt'] } },
-        attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt'] }
+        include:[
+            { model: models.Point, as: 'center', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } }
+        ],
+        attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt', 'point_id'] },
     });
 
-    /*let quartiersInfos = [];
-
-    for(const quartier of quartiers){
-        let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
-        let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
-        let zone_intervention = await models.Zone_Intervention.findByPk(quartier.zone_intervention_id,{ attributes: ['nom_fr','nom_ar'] });
-        console.log(center);
-        let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
-        quartiersInfos.push(quartierInfo)
-    };*/
-  
     res.status(200).json({
         status: 'success',
         results: quartiers.length,
-        quartiers: quartiers
+        quartiers
     });
 
 });
