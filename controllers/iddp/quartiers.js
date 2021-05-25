@@ -25,45 +25,39 @@ exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
 
 exports.consulter_tous_les_quartiers_par_gouvernourat = catchAsync(async (req, res, next) => {
 
-    const quartiers = await models.Quartier.findAll({ where: { id: { [Op.startsWith]: req.params.id } } });
+    const quartiers = await models.Commune.findAll({
+        where: { gouvernorat_id: req.params.id },
+        include:{ model: models.Quartier, as: 'quartiers', attributes: { exclude: ['point_id', 'projet_id', 'commune_id', 'createdAt', 'updatedAt'] },
+        include:[
+            { model: models.Point, as: 'center', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } }
+        ]},
+        attributes: { exclude: ['id', 'createdAt', 'updatedAt', 'gouvernorat_id', 'code', 'nom_fr', 'nom_ar'] },
+    });
 
-    let quartiersInfos = [];
-
-    for(const quartier of quartiers){
-        let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
-        let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
-        let zone_intervention = await models.Zone_Intervention.findByPk(quartier.zone_intervention_id,{ attributes: ['nom_fr','nom_ar'] });
-        console.log(center);
-        let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
-        quartiersInfos.push(quartierInfo)
-    };
-  
     res.status(200).json({
         status: 'success',
-        results: quartiersInfos.length,
-        quartiers: quartiersInfos
+        results: quartiers.length,
+        quartiers
     });
 });
 
 exports.consulter_tous_les_quartiers_par_commune = catchAsync(async (req, res, next) => {
 
-    const quartiers = await models.Quartier.findAll({ where: { id: { [Op.like]: '____'+req.params.id+'%' } } });
+    const quartiers = await models.Commune.findAll({
+        where: { id: req.params.id },
+        include:{ model: models.Quartier, as: 'quartiers', attributes: { exclude: ['point_id', 'projet_id', 'commune_id', 'createdAt', 'updatedAt'] },
+        include:[
+            { model: models.Point, as: 'center', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } }
+        ]},
+        attributes: { exclude: ['id', 'createdAt', 'updatedAt', 'gouvernorat_id', 'code', 'nom_fr', 'nom_ar'] },
+    });
 
-    let quartiersInfos = [];
-
-    for(const quartier of quartiers){
-        let latlngs = await models.Point.findAll({ where: { quartier_id: quartier.id } });
-        let center = await models.Point.findByPk(quartier.point_id,{ attributes: ['lat','lng'] });
-        let zone_intervention = await models.Zone_Intervention.findByPk(quartier.zone_intervention_id,{ attributes: ['nom_fr','nom_ar'] });
-        console.log(center);
-        let quartierInfo = { ...quartier.dataValues, zone_intervention: zone_intervention.dataValues, center: center.dataValues, latlngs};
-        quartiersInfos.push(quartierInfo)
-    };
-  
     res.status(200).json({
         status: 'success',
-        results: quartiersInfos.length,
-        quartiers: quartiersInfos
+        results: quartiers.length,
+        quartiers
     });
 });
 
@@ -83,7 +77,7 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
     const center = await models.Point.create({id: uuidv4(),...req.body.center});
 
-    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.commune_id, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
+    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.code, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
 
     req.body.latlngs.forEach(async (latlng) => {
         await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
@@ -96,35 +90,32 @@ exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
 exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
-    const quartier = await models.Quartier.findByPk(req.params.id);
+    const quartier = await models.findByPk(req.params.id);
 
-    console.log(quartier);
-    if(req.body.latlngs && req.body.center){
-        await Promise.all([
-            models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0'),
-            models.Point.destroy({ where: { id: quartier.point_id } }),
-            models.Point.destroy({ where: { quartier_id: req.params.id } })
-            
-        ]).then(async ()=>{
-            req.body.latlngs.forEach(async (latlng) => {
-                await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
-            });
-
-            console.log("im here");
-            const center = await models.Point.create({ id: uuidv4(), ...req.body.center });
-            await models.Quartier.update({ point_id: center.id }, { where: { id: req.params.id } });
-        })
-    }
-
-    models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1')
+    if(!quartier){
+        return next(new AppError('Invalid fields or No quartier found with this ID', 404));
+     }
 
     if(req.body.quartier){
-        const quartierUpdated = await models.Quartier.update(req.body.quartier, { where: { id: req.params.id } });
-  
-        if(!quartierUpdated){
-           return next(new AppError('Invalid fields or No quartier found with this ID', 404));
-        }
+        await models.Quartier.update(req.body.quartier,{ where: { id: quartier.id } });
     }
+
+    if(req.body.latlngs){
+        await models.Point.destroy({ where: { quartier_id: quartier.id } });
+        req.body.latlngs.forEach(async (latlng) => {
+            await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
+        });
+    }
+    
+    if(res.body.center){
+        const point = await models.Point.create({ id: uuidv4(), lat: center.lat, lng: center.lng });
+        quartier.point_id = point.id;
+        quartier.save();
+
+        
+    }
+
+
   
     res.status(203).json({
         status: 'success',
@@ -134,17 +125,11 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
 exports.supprimer_quartier = catchAsync(async(req, res, next) => {
 
-    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
-    const quartier = await models.Quartier.findByPk(req.params.id);
-    await models.Quartier.destroy({ where: { id: req.params.id } });
-    const point = await models.Point.destroy({ where: { id: quartier.point_id } });
+    const quartier = await models.Quartier.destroy({ where: { id: req.params.id } });
 
     if(!quartier){
        return next(new AppError('Invalid fields or No quartier found with this ID', 404));
     }
-
-    const points = await models.Point.destroy({ where: { id: req.params.id } });
-    await models.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
 
     res.status(203).json({
         status: 'success',

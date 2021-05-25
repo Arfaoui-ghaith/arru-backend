@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'gouvernorat_id'
       });
 
-      this.hasMany(models.Projet, {
+      this.hasMany(models.Quartier, {
+        as: 'quartiers',
         foreignKey: 'commune_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
