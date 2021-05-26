@@ -94,7 +94,7 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
     if(!quartier){
         return next(new AppError('Invalid fields or No quartier found with this ID', 404));
-     }
+    }
 
     if(req.body.quartier){
         await models.Quartier.update(req.body.quartier,{ where: { id: quartier.id } });
@@ -109,13 +109,10 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
     
     if(res.body.center){
         const point = await models.Point.create({ id: uuidv4(), lat: center.lat, lng: center.lng });
+        await models.Point.destroy({ where: { id: quartier.point_id } });
         quartier.point_id = point.id;
         quartier.save();
-
-        
     }
-
-
   
     res.status(203).json({
         status: 'success',

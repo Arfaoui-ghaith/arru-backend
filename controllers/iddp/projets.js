@@ -4,50 +4,35 @@ const AppError = require('./../../utils/appError');
 const codification = require('./../utils/codification');
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
-    const projets = await models.Projet.findAll({});
+    const projets = await models.Projet.findAll({
+        include: { model: models.Infr },
+        include: { model: models.Memoire }
+    });
   
     if(!projets){
        return next(new AppError('No projets found.', 404));
     }
-
-    let projetInfo = [];
-
-    for(const projet of projets){
-        let gouvernorat = await models.Gouvernorat.findByPk(projet.id.slice(0,3),{ attributes: [['nom_fr','nom']] });
-        let commune = await models.Commune.findByPk(projet.id.slice(0,8),{ attributes: [['nom_fr','nom']] });
-        let zone = await models.Zone_Intervention.findOne({ where: { id: projet.zone_intervention_id } });
-        let infrastructures = await models.Infrastructure.findAll({ where: { projet_id: projet.id } });
-        let etude = await models.Etude.findByPk(projet.id+'-ET');
-        const quartiers = await models.Quartier.findAll({ where: { zone_intervention_id: zone.id }, attributes: [['nom_fr','nom']] });
-        projetInfo.push({ gouvernorat, commune, ...projet.dataValues, infrastructures, zone, etude, quartiers });
-    }
   
     res.status(200).json({
         status: 'success',
-        results: projetInfo.length,
-        projets: projetInfo
+        results: projets.length,
+        projets
     });
 });
 
 exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 
-    const projet = await models.Projet.findByPk(req.params.id);
+    const projet = await models.Projet.findByPk(req.params.id, {
+        include: { model: models.Quartier, as: 'quartiers', include: models.Point }
+    });
   
     if(!projet){
        return next(new AppError('No projet found.', 404));
     }
 
-    const quartiers = await models.Quartier.findAll({ where: { projet_id: req.params.id } });
-    const quartiersInfos = [];
-    for(const quartier of quartiers){
-        let limites_quartier = await models.Limite_quartier.findAll({ where: { quartier_id: quartier.id  } });
-        let quartierOBJ = { ...quartier, limites_quartier };
-        quartiersInfos.push(quartierOBJ);
-    }
-
     res.status(200).json({
         status: 'success',
-        projet: {...projet, quartiersInfos}
+        projet
     });
 });
 

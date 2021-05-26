@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasMany(models.Quartier, {
+        as: 'quartiers',
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
