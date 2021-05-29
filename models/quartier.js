@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Projet, {
-        as: 'quartiertoProjet',
+        as: 'projet',
         foreignKey: 'projet_id'
       });
 

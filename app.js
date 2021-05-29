@@ -16,6 +16,7 @@ const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
 const quartierRouter = require('./routes/iddp/quartierRoutes');
 const projetRouter = require('./routes/iddp/projetRoutes');
+const trancheRouter = require('./routes/iddp/trancheRoutes');
 
 const critereRouter = require('./routes/iddp/critereRoutes');
 const bailleur_fondRouter = require('./routes/financement/bailleur_fondRoutes');
@@ -42,6 +43,7 @@ app.use('/api/v1/gouvernorats', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
+app.use('/api/v1/tranches', trancheRouter);
 
 app.use('/api/v1/criteres', critereRouter);
 //financement
