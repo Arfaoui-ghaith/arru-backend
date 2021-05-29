@@ -14,10 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'projet_id'
       });
 
-      this.belongsTo(models.Bailleur_fonds, {
-        foreignKey: 'source_financement'
-      });
-
       this.hasMany(models.Financement, {
         as: 'financements',
         foreignKey: 'memoire_id',

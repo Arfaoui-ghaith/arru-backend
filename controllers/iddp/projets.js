@@ -2,6 +2,7 @@ const models = require('./../../models/index');
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('./../utils/codification');
+const { v4: uuidv4 } = require('uuid');
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     const projets = await models.Projet.findAll({
@@ -10,10 +11,12 @@ exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
                 include: [
                     { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
                     { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
-                ]},
+                ]
+            },
             { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
             { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
-                include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } }
+                include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } 
+            }
         ], 
         attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
@@ -57,7 +60,19 @@ exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 });
 
 exports.consulter_projet = catchAsync(async (req, res, next) => {
-    const projet = await models.Projet.findByPk(req.params.id);
+    const projet = await models.Projet.findOne({
+        where: { id: req.params.id },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+            include: [
+                { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+            ]},
+            { model: models.Infr, as: 'infrastructure', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
+        include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } }
+        ], attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
   
     if(!projet){
       return next(new AppError('No projet with this ID.',404));
@@ -71,26 +86,47 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
 
 exports.ajout_projet = catchAsync(async (req, res, next) => {
 
-    
+    if(!req.body.quartiers){
+        return next(new AppError('you need at least one quartier to create projet', 401));
+    }
+    const nouveau_projet = await models.Projet.create({
+        id: uuidv4(), 
+        code: codification.codeProjet(req.body.commune_code, req.body.projet.nom),
+        ...req.body.projet
+    });
 
-    const nouveau_projet = await models.Projet.create({id: await codification.codeProjet(req.body.projet.zone_intervention_id), zone_intervention_id: req.body.projet.zone_intervention_id });
-  
     if(!nouveau_projet){
-       return next(new AppError('Invalid fields or duplicate projet', 401));
+        return next(new AppError('Invalid fields or duplicate projet', 401));
     }
 
+    req.body.infrastructures.map(async (infra) => {
+        await models.Infrastructure.create({
+            id: uuidv4(),
+            projet_id: nouveau_projet.id,
+            code: codification.codeInfrastructure(nouveau_projet.code),
+            ...infra
+        });
+    });
+
+    req.body.quartiers.map(async (id) => {
+        await models.Quartier.update({ projet_id: nouveau_projet.id }, { where: { id } });
+    });
+
+    res.status(200).json({
+        status: 'success',
+    });
     
 });
 
 exports.modifier_projet = catchAsync(async(req, res, next) => {
 
-    if(req.body.etude){
-        await models.Infrastructure.update(req.body.etude, { where: { id: req.params.id+'-ET' } });
+    if(req.body.projet){
+        await models.Infrastructure.update(req.body.projet, { where: { id: req.params.id } });
     }
 
     if(req.body.infrastructures){
         req.body.infrastructures.map(async(infra) => {
-            await models.Infrastructure.update(infra,{ where: { id: req.params.id+'-INF-'+infra.type.slice(0,2).toUpperCase() } });
+            await models.Infrastructure.update(infra,{ where: { [Op.and]: [{id: req.params.id }, {type: infra.type}] }});
         });
     }
 
@@ -118,6 +154,21 @@ exports.consulter_les_projets_eligible = catchAsync(async(req,res,next) => {
 
 exports.consulter_les_projets_ineligible = catchAsync(async(req,res,next) => {
     const projets = await models.Projet.findAll({ where: { eligible: false } });
+
+    res.status(203).json({
+        status: 'success',
+        projets
+    });
+});
+
+exports.supprimer_projet = catchAsync(async(req,res,next) => {
+
+    await models.Quartier.update({ projet_id: null }, { where: { projet_id: req.params.id } });
+    const projet = await models.Projet.destroy({ where: { id: req.params.id } });
+
+    if(!projet){
+        return next(new AppError('projet not found', 401));
+    }
 
     res.status(203).json({
         status: 'success',

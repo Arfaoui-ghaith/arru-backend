@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
-      
     }
   };
   Bailleur_fonds.init({
