@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasOne(models.Decompte, {
+        as: 'decompte',
         foreignKey: 'memoire_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -33,7 +34,6 @@ module.exports = (sequelize, DataTypes) => {
   Memoire.init({
     projet_id: {
       type: DataTypes.UUID,
-      allowNull: false,
     },
     htva: {
       type: DataTypes.DOUBLE,

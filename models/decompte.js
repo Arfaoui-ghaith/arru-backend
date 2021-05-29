@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Prestataire, {
+        as: 'prestataire',
         foreignKey: 'prestataire_id'
       });
     }

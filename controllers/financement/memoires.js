@@ -6,32 +6,46 @@ const AppError = require('../../utils/appError');
 
 exports.consulter_tous_les_memoires = catchAsync(async (req, res, next) => {
 
-    const memoires = await models.Memoire.findAll({ include: { model: models.Bailleur_fonds, attributes: { exclude: ['createdAt','updatedAt','image'] } } });
+    const memoires = await models.Memoire.findAll({
+        include:[
+            { model: models.Financement, attributes: { exclude: ['createdAt','updatedAt','image'] },
+                include: { model: models.Bailleur_fonds, as: 'bailleur_fond', attributes: { exclude: ['createdAt','updatedAt','image'] } }
+            },
+            { model: models.Decompte, as: 'decompte', attributes: { exclude: ['createdAt','updatedAt','memoire_id','prestataire_id'] },
+                include: { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt','memoire_id'] } } 
+            },
+            { model: models.Projet, as: 'projet', attributes: { exclude: ['createdAt','updatedAt'] } }
+        ],
+        attributes: { exclude: ['createdAt','updatedAt'] }
+    });
 
     if(!memoires){
         return next(new AppError('No memoires found.', 404));
     }
-
-    memoiresInfo = [];
-
-    for(const memoire of memoires){
-        let financements = await models.Financement.findAll({ 
-            where: { memoire_id: memoire.id }, attributes: ['montant','type','id'],
-            include: { model: models.Bailleur_fonds, attributes: ['nom','abreviation','id'] } });
-        memoiresInfo.push({ memoire, financements });
-    }
   
     res.status(200).json({
         status: 'success',
-        results: memoiresInfo.length,
-        memoiresInfo
+        results: memoires.length,
+        memoires
     });
 
 });
 
 exports.consulter_memoire = catchAsync(async (req, res, next) => {
 
-    const memoire = await models.Memoire.findByPk(req.params.id);
+    const memoire = await models.Memoire.findByPk(
+        req.params.id,{
+        include:[
+            { model: models.Financement, attributes: { exclude: ['createdAt','updatedAt','image'] },
+                include: { model: models.Bailleur_fonds, as: 'bailleur_fond', attributes: { exclude: ['createdAt','updatedAt','image'] } }
+            },
+            { model: models.Decompte, as: 'decompte', attributes: { exclude: ['createdAt','updatedAt','memoire_id','prestataire_id'] },
+                include: { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt','memoire_id'] } } 
+            },
+            { model: models.Projet, as: 'projet', attributes: { exclude: ['createdAt','updatedAt'] } }
+        ],
+        attributes: { exclude: ['createdAt','updatedAt'] }
+    });
   
     if(!memoire){
       return next(new AppError('No memoire with this ID.',404));
@@ -54,48 +68,29 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
 
     const etat = await models.Bailleur_fonds.findOne({ where: { abreviation: "ETAT" } });
 
-    console.log(nouveau_memoire.htv,nouveau_memoire.timbre_fiscale,nouveau_memoire.gestion_frais_tva);
-
-    await models.Financement.create({
-        id: uuidv4(), 
-        montant: nouveau_memoire.htva + nouveau_memoire.frais_gestion,
-        bailleur_id: nouveau_memoire.source_financement, 
-        memoire_id: nouveau_memoire.id,
-        type: "prévisionnel"});
-    
-    await models.Financement.create({
-        id: uuidv4(),
-        montant: nouveau_memoire.htva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva,
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "prévisionnel"});
-    
-    await models.Financement.create({ 
-        id: uuidv4(), 
-        bailleur_id: nouveau_memoire.source_financement,
-        memoire_id: nouveau_memoire.id,
-        type: "deblocage"});
-            
-    await models.Financement.create({
-        id: uuidv4(),
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "deblocage"});
-
-    await models.Financement.create({
-        id: uuidv4(), 
-        montant: -(nouveau_memoire.htva + nouveau_memoire.frais_gestion),
-        bailleur_id: nouveau_memoire.source_financement,
-        memoire_id: nouveau_memoire.id,
-        type: "reliquat"});
-                
-    await models.Financement.create({
-        id: uuidv4(),
-        montant: -(nouveau_memoire.htva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva),
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "reliquat"});
-    
+    await models.Financement.bulkCreate([
+        {
+            id: uuidv4(),
+            montant: (nouveau_memoire.tva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva),
+            bailleur_id: etat.id,
+            memoire_id: nouveau_memoire.id,
+            type: "prévisionnel"
+        },
+        {
+            id: uuidv4(),
+            montant: (nouveau_memoire.tva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva),
+            bailleur_id: etat.id,
+            memoire_id: nouveau_memoire.id,
+            type: "deblocage"
+        },
+        {
+            id: uuidv4(),
+            montant: (nouveau_memoire.tva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva),
+            bailleur_id: etat.id,
+            memoire_id: nouveau_memoire.id,
+            type: "reliquat"
+        },
+    ]);
   
     res.status(201).json({
         status: 'success',
@@ -103,9 +98,6 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
     });
 
 });
-
-
-exports.consult
 
 
 exports.modifier_Memoire = catchAsync(async(req, res, next) => {
@@ -124,6 +116,7 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
 
 exports.supprimer_memoire = catchAsync(async(req, res, next) => {
 
+    await models.Memoire.update({ projet_id: null}, { where: { id: req.params.id } })
     const memoire = await models.Memoire.destroy({ where: { id: req.params.id } });
   
     if(!memoire){
