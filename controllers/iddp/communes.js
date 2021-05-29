@@ -6,13 +6,23 @@ const { v4: uuidv4 } = require('uuid');
 
 exports.consulter_tous_les_communes = catchAsync(async (req, res, next) => {
 
-    console.log("hello");
-    const communes = await models.Commune.findAll({ 
-        include: { model: models.Gouvernorat, attributes: { exclude: ['createdAt', 'updatedAt'] } }, 
-        attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] } });
+    const communes = await models.Commune.findAll({
+        include: [
+            { model: models.Gouvernorat, as: 'gouvernorat', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updatedAt']},
+                include: [
+                    { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                    { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                ] 
+            }
+        ],
+        attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] } 
+    });
+    
     if(!communes){
        return next(new AppError('No communes found.', 404));
     }
+
     res.status(200).json({
         status: 'success',
         results: communes.length,
@@ -60,7 +70,12 @@ exports.consulter_commune = catchAsync(async (req, res, next) => {
 });
 
 exports.ajout_commune = catchAsync(async (req, res, next) => {
-    const nouveau_commune = await models.Commune.create({id: uuidv4(), code: codification.codeCommune(req.body.gouvernorat_code,req.body.nom_fr),...req.body});
+
+    const nouveau_commune = await models.Commune.create({
+        id: uuidv4(),
+        code: codification.codeCommune(req.body.gouvernorat_code,req.body.nom_fr),
+        ...req.body
+    });
   
     if(!nouveau_commune){
        return next(new AppError('Invalid fields or duplicate commune', 401));
@@ -70,6 +85,7 @@ exports.ajout_commune = catchAsync(async (req, res, next) => {
         status: 'success',
         nouveau_commune
     });
+
 });
 
 exports.modifier_commune = catchAsync(async(req, res, next) => {

@@ -8,10 +8,6 @@ module.exports = {
         
         primaryKey: true,
       },
-      code: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       bailleur_id: {
         type: Sequelize.UUID,
         allowNull: false,

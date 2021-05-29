@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Gouvernorat, {
+        as: 'gouvernorat',
         foreignKey: 'gouvernorat_id'
       });
 

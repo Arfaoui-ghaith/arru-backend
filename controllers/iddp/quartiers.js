@@ -62,7 +62,14 @@ exports.consulter_tous_les_quartiers_par_commune = catchAsync(async (req, res, n
 });
 
 exports.consulter_quartier = catchAsync(async (req, res, next) => {
-    const quartier = await models.Quartier.findByPk(req.params.id);
+    const quartier = await models.Quartier.findByPk(
+        req.params.id,{
+        include:[
+            { model: models.Point, as: 'center', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } }
+        ],
+        attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt', 'point_id'] },
+    });
   
     if(!quartier){
       return next(new AppError('No quartier with this ID.',404));
@@ -77,7 +84,7 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
     const center = await models.Point.create({id: uuidv4(),...req.body.center});
 
-    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.code, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
+    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.commune_code, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
 
     req.body.latlngs.forEach(async (latlng) => {
         await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
@@ -90,7 +97,7 @@ exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
 exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
-    const quartier = await models.findByPk(req.params.id);
+    const quartier = await models.Quartier.findByPk(req.params.id);
 
     if(!quartier){
         return next(new AppError('Invalid fields or No quartier found with this ID', 404));
@@ -107,11 +114,11 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
         });
     }
     
-    if(res.body.center){
-        const point = await models.Point.create({ id: uuidv4(), lat: center.lat, lng: center.lng });
-        await models.Point.destroy({ where: { id: quartier.point_id } });
-        quartier.point_id = point.id;
-        quartier.save();
+    if(req.body.center){
+        const point = await models.Point.create({ id: uuidv4(), lat: req.body.center.lat, lng: req.body.center.lng });
+        let id = quartier.point_id;
+        await models.Quartier.update({ point_id: point.id }, { where: { id: quartier.id } });
+        await models.Point.destroy({ where: { id } });
     }
   
     res.status(203).json({

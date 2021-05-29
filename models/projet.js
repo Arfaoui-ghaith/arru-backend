@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Infrastructure, {
+        as: 'infrastructures',
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -26,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasOne(models.Memoire, {
+        as: 'memoire',
         foreignKey: 'projet_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',

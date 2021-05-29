@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Prestataire.init({
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     nom: {
       type: DataTypes.STRING,
       allowNull: false,

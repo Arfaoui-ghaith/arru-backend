@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Decompte.init({
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     prestataire_id: {
       type: DataTypes.UUID,
     },

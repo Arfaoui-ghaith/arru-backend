@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const projetController = require('./../../controllers/iddp/projets');
-const infrastructureController = require('./../../controllers/iddp/infrastructures');
 const authController = require('./../../controllers/access_permissions/authController');
 
 //router.use(authController.protect);
 
 router.route('/')
     .get(projetController.consulter_tous_les_projets)
-    .post(projetController.ajout_projet, infrastructureController.ajout_infrastructure);
+    .post(projetController.ajout_projet);
 
 router.route('/eligible')
     .get(projetController.consulter_les_projets_eligible);

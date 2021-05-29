@@ -5,9 +5,18 @@ const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 
 exports.consulter_tous_les_gouvernorats = catchAsync(async (req, res, next) => {
-
     const gouvernorats = await models.Gouvernorat.findAll({
-        include: { model: models.Commune, attributes: { exclude: ['createdAt', 'updatedAt'] } },
+        include:[
+            { model: models.Fiche_criteres, as: 'fiche_criteres', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: models.Commune, as: 'communes', attributes: { exclude: ['createdAt', 'updatedAt'] }, 
+                include: { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updatedAt']},
+                    include: [
+                        { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                        { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                    ]
+                }
+            }
+        ],
         attributes: { exclude: ['commune_id', 'createdAt', 'updatedAt'] }
     });
   
@@ -23,8 +32,12 @@ exports.consulter_tous_les_gouvernorats = catchAsync(async (req, res, next) => {
 });
 
 exports.consulter_gouvernorat = catchAsync(async (req, res, next) => {
-    const gouvernorat = await models.Gouvernorat.findByPk(req.params.id, {
-        include: { model: models.Commune, attributes: { exclude: ['createdAt', 'updatedAt'] } },
+    const gouvernorats = await models.Gouvernorat.findAll({
+        where: { id: req.params.id },
+        include:[
+            { model: models.Fiche_criteres, as: 'fiche_criteres', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: models.Commune, as: 'communes', attributes: { exclude: ['createdAt', 'updatedAt'] } }
+        ],
         attributes: { exclude: ['commune_id', 'createdAt', 'updatedAt'] }
     });
   

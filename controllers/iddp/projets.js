@@ -5,9 +5,18 @@ const codification = require('./../utils/codification');
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     const projets = await models.Projet.findAll({
-        include: { model: models.Infr },
-        include: { model: models.Memoire }
-    });
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+                include: [
+                    { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                    { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                ]},
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
+                include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } }
+        ], 
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
   
     if(!projets){
        return next(new AppError('No projets found.', 404));
@@ -22,9 +31,20 @@ exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
 
 exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 
-    const projet = await models.Projet.findByPk(req.params.id, {
-        include: { model: models.Quartier, as: 'quartiers', include: models.Point }
+    const projets = await models.Projet.findAll({
+        where: { id: req.params.id },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+            include: [
+                { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+            ]},
+            { model: models.Infr, as: 'infrastructure', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
+        include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } }
+        ], attributes: { exclude: ['createdAt', 'updatedAt'] }
     });
+  
   
     if(!projet){
        return next(new AppError('No projet found.', 404));
@@ -51,17 +71,7 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
 
 exports.ajout_projet = catchAsync(async (req, res, next) => {
 
-    if(!req.body.projet){
-        return next(new AppError('projet not found', 404));
-    }
-
-    if(!req.body.infrastructures){
-        return next(new AppError('infrastructures not found', 404));
-    }
-
-    if(!req.body.etude){
-        return next(new AppError('etude not found', 404));
-    }
+    
 
     const nouveau_projet = await models.Projet.create({id: await codification.codeProjet(req.body.projet.zone_intervention_id), zone_intervention_id: req.body.projet.zone_intervention_id });
   
@@ -69,11 +79,7 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
        return next(new AppError('Invalid fields or duplicate projet', 401));
     }
 
-    req.infrastructures = req.body.infrastructures;
-    req.projet = nouveau_projet.id;
-    req.etude = req.body.etude;
-
-    next();
+    
 });
 
 exports.modifier_projet = catchAsync(async(req, res, next) => {

@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.hasMany(models.Commune, {
+        as: 'communes',
         foreignKey: 'gouvernorat_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasOne(models.Fiche_criteres, {
+        as: 'fiche_criteres',
         foreignKey: 'gouvernorat_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',

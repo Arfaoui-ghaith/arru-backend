@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Financement, {
+        as: 'financements',
         foreignKey: 'memoire_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -34,10 +35,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Memoire.init({
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     projet_id: {
       type: DataTypes.UUID,
       allowNull: false,

@@ -1,11 +1,7 @@
 const models = require('./../../models/index');
-exports.codeCommune = (gouvernorat_id,nom_commune) => {
-    console.log("commune: ",nom_commune);
-    console.log("gouvernorat_id: ",gouvernorat_id);
-    if(nom_commune.slice(0,4).includes(' ')){
-        return gouvernorat_id+'-'+nom_commune.slice(nom_commune.indexOf(' ')+1,nom_commune.indexOf(' ')+5).trim().toUpperCase();
-    }
-    return gouvernorat_id+'-'+nom_commune.slice(0,4).trim().toUpperCase();
+
+exports.codeCommune = (gouvernorat_code,nom_commune) => {
+    return gouvernorat_code+'_'+nom_commune.slice(0,4).toUpperCase();
 };
 
 exports.codeProjet= async (zone_intervention_id) => {

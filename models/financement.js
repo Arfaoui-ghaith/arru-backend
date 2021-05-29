@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Financement.init({
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     bailleur_id: {
       type: DataTypes.UUID,
       allowNull: false,

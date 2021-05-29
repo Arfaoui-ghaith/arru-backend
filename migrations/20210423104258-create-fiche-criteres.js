@@ -8,10 +8,6 @@ module.exports = {
         
         primaryKey: true,
       },
-      code: {
-        type: Sequelize.STRING,
-        unique: true
-      },
       gouvernorat_id: {
         type: Sequelize.UUID,
         allowNull: false,
