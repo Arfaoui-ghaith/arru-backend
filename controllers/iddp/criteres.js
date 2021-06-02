@@ -13,6 +13,8 @@ exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
     if(!criteres){
        return next(new AppError('No Fiche de criteres found.', 404));
     }
+
+    
   
     res.status(200).json({
         status: 'success',
@@ -24,11 +26,15 @@ exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
 
 exports.consulter_critere = catchAsync(async (req, res, next) => {
 
-    const critere = await models.Fiche_criteres.findByPk(req.params.id,
+    const critere = await models.Gouvernorat.findOne(
         {
-            include: { model: models.Gouvernorat, as: 'gouvernorat', attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt']}}
+        where: { code: req.params.id },
+        include: { model: models.Fiche_criteres, as: 'fiche_criteres', attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt']}},
+        attributes: { exclude: ['createdAt', 'updatedAt']}
         }
     );
+
+    console.log(critere);
   
     if(!critere){
       return next(new AppError('No critere with this ID.',404));

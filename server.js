@@ -30,7 +30,7 @@ const apollo = new ApolloServer({
         console.log('Disconnected!')
       },
     },
-    context: contextMiddleware,
+    //context: contextMiddleware,
 });
 
 apollo.applyMiddleware({ app });

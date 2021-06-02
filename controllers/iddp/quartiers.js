@@ -82,13 +82,16 @@ exports.consulter_quartier = catchAsync(async (req, res, next) => {
 });
 
 exports.ajout_quartier = catchAsync(async (req, res, next) => {
-    const center = await models.Point.create({id: uuidv4(),...req.body.center});
 
-    const quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(req.body.commune_code, req.body.quartier.nom_fr), commune_id: req.body.commune_id, point_id: center.id ,...req.body.quartier});
+    req.body.quartiers.map(async(quartier) => {
+        const center = await models.Point.create({id: uuidv4(),...quartier.center});
 
-    req.body.latlngs.forEach(async (latlng) => {
-        await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
-    });
+        const nouveau_quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(quartier.commune_code, quartier.quartier.nom_fr), commune_id: quartier.commune_id, point_id: center.id ,...quartier.quartier});
+    
+        quartier.latlngs.forEach(async (latlng) => {
+            await models.Point.create({ id: uuidv4(), quartier_id: nouveau_quartier.id, ...latlng });
+        });
+    })
 
     res.status(201).json({
         status: 'success'
@@ -137,5 +140,32 @@ exports.supprimer_quartier = catchAsync(async(req, res, next) => {
 
     res.status(203).json({
         status: 'success',
+    });
+});
+
+exports.consulter_tous_les_quartiers_sans_projets = catchAsync(async (req, res, next) => {
+    const gouvernorats = await models.Gouvernorat.findAll({
+        include:[
+            { model: models.Commune, as: 'communes', attributes: { exclude: ['createdAt', 'updatedAt'] }, 
+                include: { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updatedAt']},
+                    where: { projet_id: null },
+                    include: [
+                        { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                        { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                    ]
+                }
+            }
+        ],
+        attributes: { exclude: ['commune_id', 'createdAt', 'updatedAt'] }
+    });
+  
+    if(!gouvernorats){
+       return next(new AppError('No gouvernorats found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: gouvernorats.length,
+        gouvernorats
     });
 });

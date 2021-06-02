@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
+    
     surface_totale: {
       type: DataTypes.DOUBLE,
       defaultValue: 0

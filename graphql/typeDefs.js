@@ -45,10 +45,40 @@ type User {
     updatedAt: dateScalar
     token: String
 }
+type Point {
+  id: String!
+  lat: Float!
+  lng: Float!
+  quartier_id: String
+}
+type Quartier {
+    id: String!
+    code: String!
+    nom_fr: String!
+    nom_ar: String!
+    center: Point!
+    latlngs: [Point]!
+}
+type Gouvernorat {
+    id: String!
+    code: String!
+    nom_fr: String!
+    nom_ar: String!
+}
+type Commune {
+    id: String!
+    code: String!
+    nom_fr: String!
+    nom_ar: String!
+    gouvernorat: Gouvernorat!
+    quartiers: [Quartier]!
+}
 type Query {
     utilisateurs: [User]!
+    communes: [Commune]!
 }
 type Subscription {
     utilisateurs: [User]
     roles: [Role]
+    communes: [Commune]!
 }`
