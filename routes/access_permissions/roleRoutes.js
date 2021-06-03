@@ -9,13 +9,12 @@ const authController = require('./../../controllers/access_permissions/authContr
 router.use(authController.protect);
 
 router.route('/')
-    .get(/*authController.restrictTo('consulter les roles'),*/ roleController.consulter_tous_les_roles)
-    .post(/*authController.restrictTo('ajouter des roles'),*/ roleController.ajout_role);
+    .get(authController.restrictTo("consulter les roles"), roleController.consulter_tous_les_roles)
+    .post(authController.restrictTo('ajouter un role'), roleController.ajout_role);
 
 router.route('/:id')
-    .get(/*authController.restrictTo('consulter les roles'),*/ roleController.consulter_role)
-    .put(/*authController.restrictTo('modifier des roles'),*/ roleController.modifier_role)
-    .delete(/*authController.restrictTo('supprimer des roles'),*/ roleController.supprimer_role);
-
+    .get(authController.restrictTo('consulter les roles'), roleController.consulter_role)
+    .put(authController.restrictTo('modifier un role'), roleController.modifier_role)
+    .delete(authController.restrictTo('supprimer un role'), roleController.supprimer_role);
 
 module.exports = router;

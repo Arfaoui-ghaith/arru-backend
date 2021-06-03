@@ -60,6 +60,7 @@ exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 });
 
 exports.consulter_projet = catchAsync(async (req, res, next) => {
+    console.log("fsdf")
     const projet = await models.Projet.findOne({
         where: { id: req.params.id },
         include: [
@@ -68,7 +69,7 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
                 { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
                 { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
             ]},
-            { model: models.Infr, as: 'infrastructure', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
             { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
         include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } }
         ], attributes: { exclude: ['createdAt', 'updatedAt'] }
@@ -163,12 +164,9 @@ exports.consulter_les_projets_ineligible = catchAsync(async(req,res,next) => {
 
 exports.supprimer_projet = catchAsync(async(req,res,next) => {
 
+    console.log(req.params.id, "hello");
     await models.Quartier.update({ projet_id: null }, { where: { projet_id: req.params.id } });
     const projet = await models.Projet.destroy({ where: { id: req.params.id } });
-
-    if(!projet){
-        return next(new AppError('projet not found', 401));
-    }
 
     res.status(203).json({
         status: 'success',

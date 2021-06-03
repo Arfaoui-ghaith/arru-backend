@@ -18,7 +18,8 @@ router.route('/ineligible')
 
 router.route('/:id')
     .get(projetController.consulter_projet)
-    .put(projetController.modifier_projet);
+    .put(projetController.modifier_projet)
+    .delete(projetController.supprimer_projet);
 
 
 module.exports = router;

@@ -4,7 +4,7 @@ const router = express.Router();
 const role_specificationController = require('./../../controllers/access_permissions/roles_specifications');
 const authController = require('./../../controllers/access_permissions/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(role_specificationController.consulter_tous_les_roles_specifications)

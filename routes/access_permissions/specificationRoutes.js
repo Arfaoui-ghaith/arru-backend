@@ -4,7 +4,7 @@ const router = express.Router();
 const specificationController = require('./../../controllers/access_permissions/specfications');
 const authController = require('./../../controllers/access_permissions/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
     .get(specificationController.consulter_tous_les_specifications)

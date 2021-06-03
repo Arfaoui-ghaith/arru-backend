@@ -10,7 +10,7 @@ router.route('/')
     .get(quartierController.consulter_tous_les_quartiers)
     .post(quartierController.ajout_quartier);
 
-router.route('/sans_projets')
+router.route('/sans_projet')
     .get(quartierController.consulter_tous_les_quartiers_sans_projets);
 
 router.route('/gouvernorat/:id')

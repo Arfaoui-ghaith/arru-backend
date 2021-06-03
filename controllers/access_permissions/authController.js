@@ -54,14 +54,18 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictTo = (fonctionalite) => {
     return async (req, res, next) => {
       
+        console.log("hgkjhgjh");
+
         const roles = await models.sequelize.query(
-            "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+            "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalites` as rf, `fonctionalites` as f "
             +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
             { 
                 replacements: { utilisateur: req.user.id, fonctionalite },
                 type: models.sequelize.QueryTypes.SELECT 
             }
         );
+
+        console.log(roles,"hgkjhgjh");
 
         if (roles.length == 0) {
             return next(
