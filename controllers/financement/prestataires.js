@@ -47,7 +47,6 @@ exports.ajout_prestataire = catchAsync(async (req, res, next) => {
 
     const nouveau_prestataire = await models.Prestataire.create({
         id: uuidv4(),
-        code: codification.codeCommune(req.body.gouvernorat_code,req.body.nom_fr),
         ...req.body
     });
   

@@ -3,6 +3,7 @@ const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('./../utils/codification');
 const { v4: uuidv4 } = require('uuid');
+const { Op } = require("sequelize");
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     const projets = await models.Projet.findAll({
@@ -87,6 +88,7 @@ exports.consulter_projet = catchAsync(async (req, res, next) => {
 
 exports.ajout_projet = catchAsync(async (req, res, next) => {
 
+    console.log(req.body);
     if(!req.body.quartiers){
         return next(new AppError('you need at least one quartier to create projet', 401));
     }
@@ -100,13 +102,15 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
         return next(new AppError('Invalid fields or duplicate projet', 401));
     }
 
+    console.log(req.body.infrastructures);
+
     req.body.infrastructures.map(async (infra) => {
-        await models.Infrastructure.create({
+        console.log(await models.Infrastructure.create({
             id: uuidv4(),
             projet_id: nouveau_projet.id,
             code: codification.codeInfrastructure(nouveau_projet.code),
             ...infra
-        });
+        }));
     });
 
     req.body.quartiers.map(async (id) => {
@@ -122,12 +126,13 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
 exports.modifier_projet = catchAsync(async(req, res, next) => {
 
     if(req.body.projet){
-        await models.Infrastructure.update(req.body.projet, { where: { id: req.params.id } });
+        await models.Projet.update(req.body.projet, { where: { id: req.params.id } });
     }
 
     if(req.body.infrastructures){
+        console.log(req.body.infrastructures);
         req.body.infrastructures.map(async(infra) => {
-            await models.Infrastructure.update(infra,{ where: { [Op.and]: [{id: req.params.id }, {type: infra.type}] }});
+            await models.Infrastructure.update(infra,{ where: { [Op.and]: [{projet_id: req.params.id }, {type: infra.type}] }});
         });
     }
 
@@ -170,6 +175,5 @@ exports.supprimer_projet = catchAsync(async(req,res,next) => {
 
     res.status(203).json({
         status: 'success',
-        projets
     });
 })

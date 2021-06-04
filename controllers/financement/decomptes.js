@@ -55,67 +55,20 @@ exports.ajout_decompte = catchAsync(async (req, res, next) => {
     if(!nouveau_decompte){
         return next(new AppError('Invalid fields or duplicate decompte', 401));
     }
-
-    const etat = await models.Bailleur_fonds.findOne({ where: { nom: "ETAT" } });
-
-    await models.Financement.create({
-        id: uuidv4(), 
-        montant: nouveau_memoire.htva + nouveau_memoire.frais_gestion,
-        bailleur_id: nouveau_memoire.source_financement, 
-        memoire_id: nouveau_memoire.id,
-        type: "prévisionnel"});
-    
-    await models.Financement.create({
-        id: uuidv4(),
-        montant: nouveau_memoire.htva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva,
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "prévisionnel"});
-    
-    await models.Financement.create({ 
-        id: uuidv4(), 
-        bailleur_id: nouveau_memoire.source_financement,
-        memoire_id: nouveau_memoire.id,
-        type: "deblocage"});
-            
-    await models.Financement.create({
-        id: uuidv4(),
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "deblocage"});
-
-    await models.Financement.create({
-        id: uuidv4(), 
-        montant: -(nouveau_memoire.htva + nouveau_memoire.frais_gestion),
-        bailleur_id: nouveau_memoire.source_financement,
-        memoire_id: nouveau_memoire.id,
-        type: "reliquat"});
-                
-    await models.Financement.create({
-        id: uuidv4(),
-        montant: -(nouveau_memoire.htva + nouveau_memoire.timbre_fiscale + nouveau_memoire.gestion_frais_tva),
-        bailleur_id: etat.id,
-        memoire_id: nouveau_memoire.id,
-        type: "reliquat"});
-    
   
     res.status(201).json({
         status: 'success',
-        nouveau_memoire
     });
 
 });
 
 
-exports.consult
+exports.modifier_decompte = catchAsync(async(req, res, next) => {
 
-
-exports.modifier_Memoire = catchAsync(async(req, res, next) => {
-
-    const memoire = await models.Memoire.update(req.body, { where: { id: req.params.id } });
+    const decompte = await models.Decompte.update(req.body, { where: { id: req.params.id } });
   
-    if(!memoire){
-       return next(new AppError('Invalid fields or No memoire found with this ID', 404));
+    if(!decompte){
+       return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
   
     res.status(203).json({
@@ -124,12 +77,12 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
     
 });
 
-exports.supprimer_memoire = catchAsync(async(req, res, next) => {
+exports.supprimer_decompte = catchAsync(async(req, res, next) => {
 
-    const memoire = await models.Memoire.destroy({ where: { id: req.params.id } });
+    const decompte = await models.Decompte.destroy({ where: { id: req.params.id } });
   
-    if(!memoire){
-       return next(new AppError('Invalid fields or No memoire found with this ID', 404));
+    if(!decompte){
+       return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
   
     res.status(203).json({

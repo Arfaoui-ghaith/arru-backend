@@ -4,14 +4,14 @@ const router = express.Router();
 const fonctionateController = require('./../../controllers/access_permissions/fonctionalites');
 const authController = require('./../../controllers/access_permissions/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
-    .get(fonctionateController.consulter_tous_les_fonctionalites)
+    .get(/*authController.restrictTo("consulter les fonctionalites"),*/fonctionateController.consulter_tous_les_fonctionalites)
     .post(fonctionateController.ajout_fonctionalite);
 
 router.route('/:id')
-    .get(fonctionateController.consulter_fonctionalite);
+    .get(authController.restrictTo("consulter les fonctionalites"),fonctionateController.consulter_fonctionalite);
 
 
 module.exports = router;

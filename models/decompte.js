@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Memoire, {
+        as: 'memoire',
         foreignKey: 'memoire_id'
       });
 
@@ -37,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Decompte',
+    tableName: 'decomptes',
   });
   return Decompte;
 };

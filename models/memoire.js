@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Projet, {
+        as: 'projet',
         foreignKey: 'projet_id'
       });
 
@@ -36,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
     },
     htva: {
+      type: DataTypes.DOUBLE,
+      defaultValue: 0.0,
+    },
+    montant_exonere: {
       type: DataTypes.DOUBLE,
       defaultValue: 0.0,
     },

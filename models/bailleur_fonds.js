@@ -19,10 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Bailleur_fonds.init({
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     nom: {
       type: DataTypes.STRING(8),
       allowNull: false,

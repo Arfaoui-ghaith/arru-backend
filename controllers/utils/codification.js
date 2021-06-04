@@ -4,7 +4,7 @@ exports.codeCommune = (gouvernorat_code,nom_commune) => {
     return gouvernorat_code+'_'+nom_commune.slice(0,4).toUpperCase();
 };
 
-exports.codeProjet= (commune_code, nom, tranche="") => {
+exports.codeProjet= (commune_code, nom="", tranche="") => {
     return commune_code+'_'+nom.slice(0,3)+tranche.toUpperCase();
 }
 
