@@ -8,7 +8,7 @@ exports.consulter_tous_les_memoires = catchAsync(async (req, res, next) => {
 
     const memoires = await models.Memoire.findAll({
         include:[
-            { model: models.Financement, attributes: { exclude: ['createdAt','updatedAt','image'] },
+            { model: models.Financement, as: 'financements', attributes: { exclude: ['createdAt','updatedAt','image'] },
                 include: { model: models.Bailleur_fonds, as: 'bailleur_fond', attributes: { exclude: ['createdAt','updatedAt','image'] } }
             },
             { model: models.Decompte, as: 'decompte', attributes: { exclude: ['createdAt','updatedAt','memoire_id','prestataire_id'] },
@@ -66,7 +66,7 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
         return next(new AppError('Invalid fields or duplicate memoire', 401));
     }
 
-    const etat = await models.Bailleur_fonds.findOne({ where: { abreviation: "ETAT" } });
+    const etat = await models.Bailleur_fonds.findOne({ where: { nom: "Etat" } });
 
     await models.Financement.bulkCreate([
         {
@@ -94,7 +94,6 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
   
     res.status(201).json({
         status: 'success',
-        nouveau_memoire
     });
 
 });

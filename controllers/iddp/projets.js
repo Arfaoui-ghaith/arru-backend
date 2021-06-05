@@ -33,6 +33,28 @@ exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.consulter_tous_les_projets_sans_memoire = catchAsync(async (req, res, next) => {
+    const projets = await models.Projet.findAll({
+        //where: { eligible: true },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']} },
+            { model: models.Memoire, as: 'memoire', required: false, where: { projet_id: null }, attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } }
+        ],
+        subQuery: false, 
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+  
+    if(!projets){
+       return next(new AppError('No projets found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: projets.length,
+        projets
+    });
+});
+
 exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 
     const projets = await models.Projet.findAll({
@@ -92,6 +114,7 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
     if(!req.body.quartiers){
         return next(new AppError('you need at least one quartier to create projet', 401));
     }
+
     const nouveau_projet = await models.Projet.create({
         id: uuidv4(), 
         code: codification.codeProjet(req.body.commune_code, req.body.projet.nom),

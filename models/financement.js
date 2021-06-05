@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Bailleur_fonds, {
+        as: 'bailleur_fond',
         foreignKey: 'bailleur_id'
       });
     }

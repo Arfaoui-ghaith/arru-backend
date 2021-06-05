@@ -10,6 +10,9 @@ router.route('/')
     .get(projetController.consulter_tous_les_projets)
     .post(projetController.ajout_projet);
 
+router.route('/sans_memoire')
+    .get(projetController.consulter_tous_les_projets_sans_memoire);
+
 router.route('/eligible')
     .get(projetController.consulter_les_projets_eligible);
 
