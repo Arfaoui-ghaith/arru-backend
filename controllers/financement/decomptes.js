@@ -8,7 +8,8 @@ exports.consulter_tous_les_decomptes = catchAsync(async (req, res, next) => {
 
     const decomptes = await models.Decompte.findAll({
         include:[
-            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt', 'projet_id'] },
+            include: { model: models.Projet, as: 'projet', attributes: { exclude: ['createdAt','updatedAt'] } } },
             { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
         ],
         attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }

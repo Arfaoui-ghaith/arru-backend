@@ -1,4 +1,6 @@
 'use strict';
+const { v4: uuidv4 } = require('uuid');
+const { Op } = require("sequelize");
 const {
   Model
 } = require('sequelize');
@@ -12,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Projet, {
         as: 'projet',
-        foreignKey: 'projet_id'
+        foreignKey: 'projet_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
       });
 
       this.hasMany(models.Financement, {
@@ -65,5 +70,36 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Memoire',
     tableName: 'memoires'
   });
+
+  Memoire.afterCreate( async(memoire) => {
+    const bailleurs = await sequelize.models.Bailleur_fonds.findAll({ where: { nom: { [Op.ne]: "Etat" } }, attributes: ['id'] });
+
+    console.log(bailleurs);
+    bailleurs.map(async(bailleur) => {
+        await sequelize.models.Financement.bulkCreate([
+          {
+              id: uuidv4(),
+              bailleur_id: bailleur.dataValues.id,
+              memoire_id: memoire.dataValues.id,
+              type: "prévisionnel"
+          },
+          {
+              id: uuidv4(),
+              bailleur_id: bailleur.dataValues.id,
+              memoire_id: memoire.dataValues.id,
+              type: "deblocage"
+          },
+          {
+              id: uuidv4(),
+              bailleur_id: bailleur.dataValues.id,
+              memoire_id: memoire.dataValues.id,
+              type: "reliquat"
+          },
+      ]);
+    });
+    
+  });
+
+
   return Memoire;
 };

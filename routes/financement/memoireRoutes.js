@@ -10,6 +10,9 @@ router.route('/')
     .get(MemoireController.consulter_tous_les_memoires)
     .post(MemoireController.ajout_memoire);
 
+router.route('/sans_decompte')
+    .get(MemoireController.consulter_tous_les_memoires_sans_decompte);
+
 router.route('/:id')
     .get(MemoireController.consulter_memoire)
     .put(MemoireController.modifier_Memoire)

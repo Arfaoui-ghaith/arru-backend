@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Memoire, {
+        as: 'memoire',
         foreignKey: 'memoire_id'
       });
 
@@ -37,7 +38,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM,
       values: ['prévisionnel','deblocage','reliquat'],
       allowNull: false,
-      unique: true
     },
   }, {
     sequelize,

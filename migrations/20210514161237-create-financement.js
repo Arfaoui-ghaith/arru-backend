@@ -35,7 +35,6 @@ module.exports = {
         type: Sequelize.ENUM,
         values: ['prévisionnel','deblocage','reliquat'],
         allowNull: false,
-        unique: true
       },
       createdAt: {
         allowNull: false,
