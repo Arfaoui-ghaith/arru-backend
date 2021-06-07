@@ -158,9 +158,10 @@ exports.modifier_projet = catchAsync(async(req, res, next) => {
             await models.Infrastructure.update(infra,{ where: { [Op.and]: [{projet_id: req.params.id }, {type: infra.type}] }});
         });
     }
-
+    
     if(req.body.eligible){
-        const projet = await models.Projet.update(req.body, { where: { id: req.params.id } });
+        const projet = await models.Projet.update(req.body.eligible, { where: { id: req.params.id } });
+        
         if(!projet){
             return next(new AppError('Invalid fields or No projet found with this ID', 404));
         }
@@ -173,7 +174,23 @@ exports.modifier_projet = catchAsync(async(req, res, next) => {
 });
 
 exports.consulter_les_projets_eligible = catchAsync(async(req,res,next) => {
-    const projets = await models.Projet.findAll({ where: { eligible: true } });
+
+    const projets = await models.Projet.findAll({
+        where: { eligible: true },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+                include: [
+                    { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                    { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                ]
+            },
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
+                include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } 
+            }
+        ], 
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
 
     res.status(203).json({
         status: 'success',
@@ -182,7 +199,23 @@ exports.consulter_les_projets_eligible = catchAsync(async(req,res,next) => {
 });
 
 exports.consulter_les_projets_ineligible = catchAsync(async(req,res,next) => {
-    const projets = await models.Projet.findAll({ where: { eligible: false } });
+
+    const projets = await models.Projet.findAll({
+        where: { eligible: false },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+                include: [
+                    { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                    { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                ]
+            },
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] },
+                include: { model: models.Financement, as: 'financements', attributes: { exclude: [ 'createdAt', 'updatedAt', 'memoire_id'] } } 
+            }
+        ], 
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
 
     res.status(203).json({
         status: 'success',

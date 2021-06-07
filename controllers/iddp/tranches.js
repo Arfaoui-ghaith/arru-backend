@@ -7,7 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 exports.consulter_tous_les_tranches = catchAsync(async (req, res, next) => {
 
     const tranches = await models.Tranche.findAll({
-        include: { model: models.Projet, as: 'projets', attributes: { exclude: ['tranche_id', 'createdAt', 'updatedAt']}},
+        include: { model: models.Projet, as: 'projets', attributes: { exclude: ['tranche_id', 'createdAt', 'updatedAt']},
+            include: { model: models.Quartier, as: 'quartiers' } },
         attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] },
         order: ['numero']
     });
