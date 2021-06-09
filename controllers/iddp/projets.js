@@ -55,6 +55,28 @@ exports.consulter_tous_les_projets_sans_memoire = catchAsync(async (req, res, ne
     });
 });
 
+exports.consulter_tous_les_projets_sans_tranche = catchAsync(async (req, res, next) => {
+    const projets = await models.Projet.findAll({
+        where: { eligible: true, tranche_id: null },
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']} },
+            { model: models.Memoire, as: 'memoire', required: false, where: { projet_id: null }, attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } }
+        ],
+        subQuery: false,
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+  
+    if(!projets){
+       return next(new AppError('No projets found.', 404));
+    }
+  
+    res.status(200).json({
+        status: 'success',
+        results: projets.length,
+        projets
+    });
+});
+
 exports.consulter_quartiers_par_projet = catchAsync(async (req, res, next) => {
 
     const projets = await models.Projet.findAll({

@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasMany(models.Trace, {
+        as: 'traces',
+        foreignKey: 'utilisateur_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Utilisateur.init({

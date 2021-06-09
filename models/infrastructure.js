@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Projet, {
         foreignKey: 'projet_id'
       });
+
+      this.hasMany(models.Progres, {
+        as: 'Progres',
+        foreignKey: 'infrastructure_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Infrastructure.init({

@@ -8,7 +8,11 @@ exports.consulter_tous_les_tranches = catchAsync(async (req, res, next) => {
 
     const tranches = await models.Tranche.findAll({
         include: { model: models.Projet, as: 'projets', attributes: { exclude: ['tranche_id', 'createdAt', 'updatedAt']},
-            include: { model: models.Quartier, as: 'quartiers' } },
+            include: [
+                { model: models.Quartier, as: 'quartiers' },
+                { model: models.Infrastructure, as: 'infrastructures' }
+            ]
+        },
         attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] },
         order: ['numero']
     });
@@ -83,7 +87,7 @@ exports.modifier_tranche = catchAsync(async(req, res, next) => {
     }
 
     if(req.body.numero){
-        await models.Tranche.update({ numero: req.body.numero }, { id: tranche.id });
+        await models.Tranche.update({ numero: req.body.numero }, { where: { id: tranche.id } });
     }
 
     if(req.body.projets){
