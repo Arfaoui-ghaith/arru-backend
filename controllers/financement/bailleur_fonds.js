@@ -42,6 +42,8 @@ exports.ajout_bailleur_fond = catchAsync(async (req, res, next) => {
     if(!nouveau_bailleur_fond){
         return next(new AppError('Invalid fields or duplicate bailleur_fond', 401));
     }
+
+    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `Ajouter le bailleur de fonds ${nouveau_bailleur_fond.nom}` })
   
     res.status(201).json({
         status: 'success',
@@ -61,6 +63,8 @@ exports.modifier_bailleur_fond = catchAsync(async(req, res, next) => {
     if(!bailleur_fond){
        return next(new AppError('Invalid fields or No point found with this ID', 404));
     }
+
+    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `Modifier le bailleur de fonds ${bailleur_fond.nom}` })
   
     res.status(203).json({
         status: 'success',
@@ -75,6 +79,9 @@ exports.supprimer_bailleur_fond = catchAsync(async(req, res, next) => {
     if(!bailleur_fond){
        return next(new AppError('Invalid fields or No bailleur_fond found with this ID', 404));
     }
+
+    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `suppression le bailleur de fonds ${bailleur_fond.nom}` })
+
   
     res.status(203).json({
         status: 'success',

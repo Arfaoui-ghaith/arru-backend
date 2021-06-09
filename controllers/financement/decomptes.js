@@ -18,6 +18,8 @@ exports.consulter_tous_les_decomptes = catchAsync(async (req, res, next) => {
     if(!decomptes){
         return next(new AppError('No decomptes found.', 404));
     }
+
+    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `suppri le bailleur de fonds ${bailleur_fond.nom}` })
   
     res.status(200).json({
         status: 'success',

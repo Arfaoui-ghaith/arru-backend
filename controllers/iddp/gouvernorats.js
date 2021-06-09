@@ -32,7 +32,7 @@ exports.consulter_tous_les_gouvernorats = catchAsync(async (req, res, next) => {
 });
 
 exports.consulter_gouvernorat = catchAsync(async (req, res, next) => {
-    const gouvernorats = await models.Gouvernorat.findAll({
+    const gouvernorat = await models.Gouvernorat.findAll({
         where: { id: req.params.id },
         include:[
             { model: models.Fiche_criteres, as: 'fiche_criteres', attributes: { exclude: ['createdAt', 'updatedAt'] } },
