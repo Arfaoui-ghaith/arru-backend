@@ -5,7 +5,7 @@ const bailleur_fondController = require('./../../controllers/financement/bailleu
 const authController = require('../../controllers/access_permissions/authController');
 const imageEditAndSave = require('./../../utils/imageEditAndSave');
 
-//router.use(authController.protect);
+router.use(authController.protect);
 
 router.route('/')
     .get(bailleur_fondController.consulter_tous_les_bailleur_fonds)

@@ -73,6 +73,11 @@ type Commune {
     gouvernorat: Gouvernorat!
     quartiers: [Quartier]!
 }
+type Trace {
+  utilisateur: User
+  action: String!
+  createdAt: dateScalar
+}
 type Query {
     utilisateurs: [User]!
     communes: [Commune]!
@@ -81,4 +86,5 @@ type Subscription {
     utilisateurs: [User]
     roles: [Role]
     communes: [Commune]!
+    traces: [Trace]
 }`

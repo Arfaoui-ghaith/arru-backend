@@ -21,12 +21,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     cout: {
-      type: DataTypes.STRING,
+      type: DataTypes.DOUBLE,
       allowNull: false
     }
   }, {
     sequelize,
     modelName: 'Progres',
+    tableName: 'progres'
   });
   return Progres;
 };

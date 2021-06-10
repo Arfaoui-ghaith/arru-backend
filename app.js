@@ -12,6 +12,7 @@ const role_fonctionaliteRouter = require('./routes/access_permissions/role_fonct
 const role_specificationRouter = require('./routes/access_permissions/roles_specificationsRoutes');
 const utilisateur_roleRouter = require('./routes/access_permissions/utilisateur_roleRoutes');
 const interfaceRouter = require('./routes/access_permissions/interfacesRoutes');
+const traceRouter = require('./routes/access_permissions/traceRoutes');
 
 const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
@@ -41,6 +42,7 @@ app.use('/api/v1/specifications', specificationRouter);
 app.use('/api/v1/roles_fonctionalites', role_fonctionaliteRouter);
 app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
+app.use('/api/v1/traces', traceRouter);
 //iddp
 app.use('/api/v1/gouvernorats', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);

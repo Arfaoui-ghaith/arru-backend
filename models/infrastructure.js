@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 module.exports = (sequelize, DataTypes) => {
   class Infrastructure extends Model {
     /**
@@ -15,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Progres, {
-        as: 'Progres',
+        as: 'progres',
         foreignKey: 'infrastructure_id',
         onDelete: 'cascade',
         onUpdate: 'cascade',
@@ -44,5 +45,10 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Infrastructure',
     tableName: 'infrastructures'
   });
+
+  Infrastructure.afterCreate( async(infra) => {
+    await sequelize.models.Progres.create({ id: uuidv4(), infrastructure_id: infra.id, cout: 0});
+  });
+
   return Infrastructure;
 };

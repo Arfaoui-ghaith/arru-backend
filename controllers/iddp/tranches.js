@@ -10,7 +10,7 @@ exports.consulter_tous_les_tranches = catchAsync(async (req, res, next) => {
         include: { model: models.Projet, as: 'projets', attributes: { exclude: ['tranche_id', 'createdAt', 'updatedAt']},
             include: [
                 { model: models.Quartier, as: 'quartiers' },
-                { model: models.Infrastructure, as: 'infrastructures' }
+                { model: models.Infrastructure, as: 'infrastructures', include: { model: models.Progres, as: 'progres' } }
             ]
         },
         attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] },
@@ -18,7 +18,7 @@ exports.consulter_tous_les_tranches = catchAsync(async (req, res, next) => {
     });
     
     if(!tranches){
-       return next(new AppError('No communes found.', 404));
+       return next(new AppError('No tranches found.', 404));
     }
 
     res.status(200).json({

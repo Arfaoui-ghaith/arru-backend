@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Utilisateur, {
+        as: 'utilisateur',
         foreignKey: 'utilisateur_id'
       });
     }
@@ -27,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Trace',
+    tableName: 'traces'
   });
   return Trace;
 };

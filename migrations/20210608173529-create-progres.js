@@ -18,7 +18,7 @@ module.exports = {
         onUpdate: 'cascade'
       },
       cout: {
-        type: Sequelize.STRING,
+        type: Sequelize.DOUBLE,
         allowNull: false
       },
       createdAt: {

@@ -1,6 +1,6 @@
 const models = require('../../models/index');
 const { v4: uuidv4 } = require('uuid');
-
+const trace = require('./../access_permissions/traces');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 
@@ -43,7 +43,7 @@ exports.ajout_bailleur_fond = catchAsync(async (req, res, next) => {
         return next(new AppError('Invalid fields or duplicate bailleur_fond', 401));
     }
 
-    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `Ajouter le bailleur de fonds ${nouveau_bailleur_fond.nom}` })
+    await trace.ajout_trace(req.user, "Ajouter Bailleur de fonds "+nouveau_bailleur_fond.nom);
   
     res.status(201).json({
         status: 'success',
@@ -64,7 +64,7 @@ exports.modifier_bailleur_fond = catchAsync(async(req, res, next) => {
        return next(new AppError('Invalid fields or No point found with this ID', 404));
     }
 
-    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `Modifier le bailleur de fonds ${bailleur_fond.nom}` })
+    await trace.ajout_trace(req.user, "Modifier Bailleur de fonds "+bailleur_fond.nom);
   
     res.status(203).json({
         status: 'success',
@@ -74,14 +74,15 @@ exports.modifier_bailleur_fond = catchAsync(async(req, res, next) => {
 
 exports.supprimer_bailleur_fond = catchAsync(async(req, res, next) => {
 
+    const bailleur = await models.Bailleur_fonds.findByPk(req.params.id);
+
     const bailleur_fond = await models.Bailleur_fonds.destroy({ where: { id: req.params.id } });
   
     if(!bailleur_fond){
        return next(new AppError('Invalid fields or No bailleur_fond found with this ID', 404));
     }
 
-    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `suppression le bailleur de fonds ${bailleur_fond.nom}` })
-
+    await trace.ajout_trace(req.user, `Supprimer le bailleur de fonds ${bailleur.nom}`);
   
     res.status(203).json({
         status: 'success',
