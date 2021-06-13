@@ -4,6 +4,33 @@ const AppError = require('./../../utils/appError');
 const codification = require('./../utils/codification');
 const { v4: uuidv4 } = require('uuid');
 const { Op } = require("sequelize");
+const trace = require('./../access_permissions/traces');
+
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
+const publishProjets = async() => {
+    let projets = await models.Projet.findAll({
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']},
+                
+            },
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } },
+
+        ], 
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
+
+    projets = await models.Projet.findAll({
+        include: [
+            { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updated', 'projet_id']}},
+            { model: models.Infrastructure, as: 'infrastructures', attributes: { exclude: ['createdAt', 'updatedAt', 'projet_id'] } }
+        ],
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+    });
+    
+    pubsub.publish('PROJETS', { projets });
+}
 
 exports.consulter_tous_les_projets = catchAsync(async (req, res, next) => {
     const projets = await models.Projet.findAll({
@@ -162,6 +189,10 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
         await models.Quartier.update({ projet_id: nouveau_projet.id }, { where: { id } });
     });
 
+    await trace.ajout_trace(req.user, `Ajouter la projet ${nouveau_projet.code}`);
+
+    await publishProjets();
+
     res.status(200).json({
         status: 'success',
     });
@@ -170,15 +201,19 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
 
 exports.modifier_projet = catchAsync(async(req, res, next) => {
 
+    const projet = await models.Projet.findByPk(req.params.id);
+
     if(req.body.projet){
         await models.Projet.update(req.body.projet, { where: { id: req.params.id } });
+        
+        await trace.ajout_trace(req.user, `Modifier la projet ${projet.code}`);
     }
 
     if(req.body.infrastructures){
-        console.log(req.body.infrastructures);
         req.body.infrastructures.map(async(infra) => {
             await models.Infrastructure.update(infra,{ where: { [Op.and]: [{projet_id: req.params.id }, {type: infra.type}] }});
         });
+        await trace.ajout_trace(req.user, `Modifier l'infrastructure de la projet ${projet.code}`);
     }
     
     if(req.body.eligible){
@@ -187,8 +222,12 @@ exports.modifier_projet = catchAsync(async(req, res, next) => {
         if(!projet){
             return next(new AppError('Invalid fields or No projet found with this ID', 404));
         }
+
+        await trace.ajout_trace(req.user, `Modifier l'egibilité de la projet ${projet.code}`);
     }
-  
+
+    await publishProjets();
+    
     res.status(203).json({
         status: 'success',
     });
@@ -247,11 +286,36 @@ exports.consulter_les_projets_ineligible = catchAsync(async(req,res,next) => {
 
 exports.supprimer_projet = catchAsync(async(req,res,next) => {
 
-    console.log(req.params.id, "hello");
     await models.Quartier.update({ projet_id: null }, { where: { projet_id: req.params.id } });
     const projet = await models.Projet.destroy({ where: { id: req.params.id } });
+
+    await publishProjets();
 
     res.status(203).json({
         status: 'success',
     });
 })
+
+exports.projetResolvers = {
+    Subscription: {
+        projets: {
+            subscribe: async (_,__,{id}) => {
+
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['PROJETS']);
+            }
+        }
+    }
+}

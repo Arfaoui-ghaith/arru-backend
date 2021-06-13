@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     code: {
       type: DataTypes.STRING,
       allowNull: false,
+      
     },
     projet_id: {
       type: DataTypes.UUID,
@@ -38,8 +39,14 @@ module.exports = (sequelize, DataTypes) => {
       values: ['drainage des eaux pluviales','assainissement','eau potable','eclairage public','voirie'],
       unique: true
     },
-    quantité: DataTypes.DOUBLE,
-    cout: DataTypes.DOUBLE,
+    quantite: {
+      type: DataTypes.DOUBLE,
+      defaultValue: 0
+    },
+    cout: {
+      type: DataTypes.DOUBLE,
+      defaultValue: 0
+    }
   }, {
     sequelize,
     modelName: 'Infrastructure',

@@ -1,9 +1,8 @@
 const { ApolloServer } = require('apollo-server-express');
 const { sequelize } = require('./models');
 const dotenv = require('dotenv');
-const contextMiddleware = require('./utils/contextMiddleware');
 const { createServer } = require('http');
-//const contextMiddleware = require('./utils/contextMiddleware');
+
 
 process.on('uncaughtException', (err) => {
   console.log(err);
@@ -29,8 +28,7 @@ const apollo = new ApolloServer({
       onDisconnect: (webSocket, context) => {
         console.log('Disconnected!')
       },
-    },
-    //context: contextMiddleware,
+    }
 });
 
 apollo.applyMiddleware({ app });

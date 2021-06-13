@@ -1,6 +1,6 @@
 const models = require('../../models/index');
 const { v4: uuidv4 } = require('uuid');
-
+const trace = require('./../access_permissions/traces');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 
@@ -19,7 +19,6 @@ exports.consulter_tous_les_decomptes = catchAsync(async (req, res, next) => {
         return next(new AppError('No decomptes found.', 404));
     }
 
-    await models.Trace.create({ id: uuidv4(), utilisateur_id: req.user.id, action: `suppri le bailleur de fonds ${bailleur_fond.nom}` })
   
     res.status(200).json({
         status: 'success',
@@ -58,6 +57,18 @@ exports.ajout_decompte = catchAsync(async (req, res, next) => {
     if(!nouveau_decompte){
         return next(new AppError('Invalid fields or duplicate decompte', 401));
     }
+
+    const decompte = await models.Decompte.findByPk(
+        nouveau_decompte.id,{
+            include:[
+                { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt'] },
+                    include: { model: models.Projet, as: 'projet' } },
+                { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
+            ],
+            attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
+        });
+
+    await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompte.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
   
     res.status(201).json({
         status: 'success',
@@ -68,11 +79,23 @@ exports.ajout_decompte = catchAsync(async (req, res, next) => {
 
 exports.modifier_decompte = catchAsync(async(req, res, next) => {
 
+    const decompteInfo = await models.Decompte.findByPk(
+        req.params.id,{
+            include:[
+                { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt'] },
+                    include: { model: models.Projet, as: 'projet' } },
+                { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
+            ],
+            attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
+        });
+
     const decompte = await models.Decompte.update(req.body, { where: { id: req.params.id } });
   
     if(!decompte){
        return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
+
+    await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
   
     res.status(203).json({
         status: 'success',
@@ -82,12 +105,24 @@ exports.modifier_decompte = catchAsync(async(req, res, next) => {
 
 exports.supprimer_decompte = catchAsync(async(req, res, next) => {
 
+    const decompteInfo = await models.Decompte.findByPk(
+        req.params.id,{
+            include:[
+                { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt'] },
+                    include: { model: models.Projet, as: 'projet' } },
+                { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
+            ],
+            attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
+        });
+
     const decompte = await models.Decompte.destroy({ where: { id: req.params.id } });
   
     if(!decompte){
        return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
   
+    await trace.ajout_trace(req.user, `Supprimer le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
+
     res.status(203).json({
         status: 'success',
     });

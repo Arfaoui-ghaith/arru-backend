@@ -27,8 +27,14 @@ module.exports = {
         values: ['drainage des eaux pluviales','assainissement','eau potable','eclairage public','voirie'],
         unique: true
       },
-      quantité: Sequelize.DOUBLE,
-      cout: Sequelize.DOUBLE,
+      quantite: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
+      },
+      cout: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

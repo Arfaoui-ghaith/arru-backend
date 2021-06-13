@@ -1,6 +1,6 @@
 const models = require('../../models/index');
 const { v4: uuidv4 } = require('uuid');
-
+const trace = require('./../access_permissions/traces');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const { Op } = require("sequelize");
@@ -108,6 +108,10 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
             type: "reliquat"
         },
     ]);
+
+    const projet = await models.Projet.findByPk(nouveau_memoire.projet_id);
+
+    await trace.ajout_trace(req.user, `Ajouter memoire pour le projet ${projet.code}`);
   
     res.status(201).json({
         status: 'success',
@@ -123,6 +127,10 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
     if(!memoire){
        return next(new AppError('Invalid fields or No memoire found with this ID', 404));
     }
+
+    const projet = await models.Projet.findByPk(memoire.projet_id);
+
+    await trace.ajout_trace(req.user, `Modifier memoire pour le projet ${projet.code}`);
   
     res.status(203).json({
         status: 'success',
@@ -132,12 +140,17 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
 
 exports.supprimer_memoire = catchAsync(async(req, res, next) => {
 
-    //await models.Memoire.update({ projet_id: null}, { where: { id: req.params.id } })
+    const memoireInfo = await models.Memoire.findByPk(req.params.id, {
+        include: { model: models.Projet, as: 'projet' }
+    });
+
     const memoire = await models.Memoire.destroy({ where: { id: req.params.id } });
   
     if(!memoire){
        return next(new AppError('Invalid fields or No memoire found with this ID', 404));
     }
+
+    await trace.ajout_trace(req.user, `Supprimer memoire pour le projet ${memoireInfo.projet.code}`);
   
     res.status(203).json({
         status: 'success',

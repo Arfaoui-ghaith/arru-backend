@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
 exports.consulter_tous_les_gouvernorats = catchAsync(async (req, res, next) => {
     const gouvernorats = await models.Gouvernorat.findAll({
         include:[
@@ -51,4 +54,26 @@ exports.consulter_gouvernorat = catchAsync(async (req, res, next) => {
    });
 });
 
+exports.gouvernoratResolvers = {
+    Subscription: {
+        gouvernorats: {
+            subscribe: async (_,__,{id}) => {
 
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['GOUVERNORATS']);
+            }
+        }
+    }
+}

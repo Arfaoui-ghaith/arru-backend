@@ -3,6 +3,18 @@ const { v4: uuidv4 } = require('uuid');
 const codification = require('./../utils/codification');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
+const trace = require('./../access_permissions/traces');
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
+const publishCriteres = catchAsync(async() => {
+    const criteres = await models.Fiche_criteres.findAll({
+        include: { model: models.Gouvernorat, as: 'gouvernorat', attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt']}}
+    });
+
+    pubsub.publish('CRITERES', { criteres });
+});
+
 
 exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
 
@@ -14,7 +26,7 @@ exports.consulter_tous_les_criteres = catchAsync(async (req, res, next) => {
        return next(new AppError('No Fiche de criteres found.', 404));
     }
 
-    
+    await publishCriteres();
   
     res.status(200).json({
         status: 'success',
@@ -54,7 +66,9 @@ exports.ajout_critere = catchAsync(async (req, res, next) => {
     if(!nouveau_critere){
        return next(new AppError('Invalid fields or duplicate critere', 401));
     }
-  
+
+    await publishCriteres();
+
     res.status(201).json({
         status: 'success',
         nouveau_critere
@@ -65,10 +79,18 @@ exports.ajout_critere = catchAsync(async (req, res, next) => {
 exports.modifier_critere = catchAsync(async(req, res, next) => {
 
     const fiche_critere = await models.Fiche_criteres.update(req.body, { where: {id: req.params.id } });
+    //const gouvernorat = await models.Gouvernorat.findByPk(fiche_critere.dataValues.gouvernorat_id);
+    const fiche = await models.Fiche_criteres.findByPk(req.params.id,{
+        include: { model: models.Gouvernorat, as: 'gouvernorat' }
+    });
 
     if(!fiche_critere){
         return next(new AppError('Invalid fields or No projet found with this ID', 404));
     }
+
+    await publishCriteres();
+
+    await trace.ajout_trace(req.user, `Modifier la fiche des criteres de la gouvernorat ${fiche.gouvernorat.nom_fr}`);
   
     res.status(203).json({
         status: 'success',
@@ -77,7 +99,7 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
 });
 
 exports.test_eligible = catchAsync( async(req, res, next) => {
-    const projets = await models.sequelize.query("SELECT DISTINCT(p.id) FROM projets as p, fiche_criteres as f, quartiers as q, communes as c, gouvernorats as g WHERE g.id = f.gouvernorat_id and g.id = c.gouvernorat_id and c.id = q.commune_id and q.projet_id = p.id and p.surface_totale >= f.surface_totale and p.surface_urbanisée_totale >= f.surface_urbanisée_totale and p.nombre_logements_totale >= f.nombre_logements_totale and p.nombre_habitants_totale >= f.nombre_habitants_totale and p.eligible = 0",
+    const projets = await models.sequelize.query("SELECT DISTINCT(p.id) FROM projets as p, fiche_criteres as f, quartiers as q, communes as c, gouvernorats as g WHERE g.id = f.gouvernorat_id and g.id = c.gouvernorat_id and c.id = q.commune_id and q.projet_id = p.id and p.surface_totale >= f.surface_totale and p.surface_urbanisee_totale >= f.surface_urbanisee_totale and p.nombre_logements_totale >= f.nombre_logements_totale and p.nombre_habitants_totale >= f.nombre_habitants_totale and p.eligible = 0",
     {
         type: models.sequelize.QueryTypes.SELECT 
     });
@@ -90,7 +112,33 @@ exports.test_eligible = catchAsync( async(req, res, next) => {
         await models.Projet.update({ eligible: true },{ where: { id: projet.id } });
     });
 
+    await trace.ajout_trace(req.user, `Faire le test de l'egibilité`);
+
     res.status(203).json({
         status: 'success'
     });
 });
+
+exports.critereResolvers = {
+    Subscription: {
+        criteres: {
+            subscribe: async (_,__,{id}) => {
+
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['CRITERES']);
+            }
+        }
+    }
+}

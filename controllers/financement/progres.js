@@ -3,6 +3,7 @@ const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('../utils/codification');
 const { v4: uuidv4 } = require('uuid');
+const trace = require('./../access_permissions/traces');
 
 exports.consulter_tous_les_progres = catchAsync(async (req, res, next) => {
 

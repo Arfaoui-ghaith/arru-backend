@@ -3,6 +3,7 @@ const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('../utils/codification');
 const { v4: uuidv4 } = require('uuid');
+const trace = require('./../access_permissions/traces');
 
 exports.consulter_tous_les_prestataires = catchAsync(async (req, res, next) => {
 
@@ -54,6 +55,8 @@ exports.ajout_prestataire = catchAsync(async (req, res, next) => {
        return next(new AppError('Invalid fields or duplicate commune', 401));
     }
   
+    await trace.ajout_trace(req.user, `Ajouter le prestataire ${nouveau_prestataire.abreviation}`);
+
     res.status(201).json({
         status: 'success',
         nouveau_prestataire
@@ -68,6 +71,8 @@ exports.modifier_prestataire = catchAsync(async(req, res, next) => {
     if(!prestataire){
        return next(new AppError('Invalid fields or No commune found with this ID', 404));
     }
+
+    await trace.ajout_trace(req.user, `Modifier le prestataire ${prestataire.abreviation}`);
   
     res.status(203).json({
         status: 'success',
@@ -77,13 +82,16 @@ exports.modifier_prestataire = catchAsync(async(req, res, next) => {
 
 exports.supprimer_prestataire = catchAsync(async(req, res, next) => {
 
-    await models.Decompte.update({ prestataire_id: null }, { where: { prestataire_id: req.params.id } })
+    const prestataireInfo = await models.Prestataire.findByPk(req.params.id);
+    await models.Decompte.update({ prestataire_id: null }, { where: { prestataire_id: req.params.id } });
     const prestataire = await models.Prestataire.destroy({ where: { id: req.params.id } });
   
     if(!prestataire){
        return next(new AppError('No prestataire found with this ID', 404));
     }
   
+    await trace.ajout_trace(req.user, `Supprimer le prestataire ${prestataireInfo.abreviation}`);
+
     res.status(203).json({
         status: 'success',
     });

@@ -4,13 +4,45 @@ const catchAsync = require('./../../utils/catchAsync');
 const AppError = require('./../../utils/appError');
 const codification = require('./../utils/codification');
 const { Op } = require("sequelize");
+const trace = require('./../access_permissions/traces');
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
+const publishQuartiers = catchAsync(async() => {
+    const quartiers = await models.Quartier.findAll({
+        include:[
+            { model: models.Point, as: 'center', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] }, order: ['createdAt', 'ASC'], }
+        ],
+        attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt', 'point_id'] },
+    });
+
+    const gouvernorats = await models.Gouvernorat.findAll({
+        include:[
+            { model: models.Fiche_criteres, as: 'fiche_criteres', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: models.Commune, as: 'communes', attributes: { exclude: ['createdAt', 'updatedAt'] }, 
+                include: { model: models.Quartier, as: 'quartiers', attributes: { exclude: ['createdAt', 'updatedAt']},
+                    include: [
+                        { model: models.Point, as: 'center', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } },
+                        { model: models.Point, as: 'latlngs', attributes: { exclude: ['createdAt', 'updatedAt', 'quartier_id'] } }
+                    ]
+                }
+            }
+        ],
+        attributes: { exclude: ['commune_id', 'createdAt', 'updatedAt'] }
+    });
+
+    pubsub.publish('QUARTIERS', { quartiers });
+    pubsub.publish('GOUVERNORATS', { gouvernorats });
+
+});
 
 exports.consulter_tous_les_quartiers = catchAsync(async (req, res, next) => {
 
     const quartiers = await models.Quartier.findAll({
         include:[
-            { model: models.Point, as: 'center', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } },
-            { model: models.Point, as: 'latlngs', attributes: { exclude: ['', 'createdAt', 'updatedAt', 'quartier_id', 'id'] } }
+            { model: models.Point, as: 'center', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] } },
+            { model: models.Point, as: 'latlngs', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] }, order: ['createdAt', 'ASC'], }
         ],
         attributes: { exclude: ['quartier_id', 'createdAt', 'updatedAt', 'point_id'] },
     });
@@ -88,10 +120,14 @@ exports.ajout_quartier = catchAsync(async (req, res, next) => {
 
         const nouveau_quartier = await models.Quartier.create({id: uuidv4(), code: codification.codeQuartier(quartier.commune_code, quartier.quartier.nom_fr), commune_id: quartier.commune_id, point_id: center.id ,...quartier.quartier});
     
-        quartier.latlngs.forEach(async (latlng) => {
+        for(const latlng of quartier.latlngs){
             await models.Point.create({ id: uuidv4(), quartier_id: nouveau_quartier.id, ...latlng });
-        });
-    })
+        }
+
+        await trace.ajout_trace(req.user, `Ajouter le quartier ${nouveau_quartier.nom_fr}`);
+    });
+
+    await publishQuartiers()
 
     res.status(201).json({
         status: 'success'
@@ -108,6 +144,8 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
     if(req.body.quartier){
         await models.Quartier.update(req.body.quartier,{ where: { id: quartier.id } });
+
+        await trace.ajout_trace(req.user, `Modifier le quartier ${quartier.nom_fr}`);
     }
 
     if(req.body.latlngs){
@@ -115,6 +153,8 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
         req.body.latlngs.forEach(async (latlng) => {
             await models.Point.create({ id: uuidv4(), quartier_id: quartier.id, ...latlng });
         });
+
+        await trace.ajout_trace(req.user, `Modifier les coordonnées pour le quartier ${quartier.nom_fr}`);
     }
     
     if(req.body.center){
@@ -122,7 +162,11 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
         let id = quartier.point_id;
         await models.Quartier.update({ point_id: point.id }, { where: { id: quartier.id } });
         await models.Point.destroy({ where: { id } });
+
+        await trace.ajout_trace(req.user, `Modifier les coordonnées pour le quartier ${quartier.nom_fr}`);
     }
+
+    await publishQuartiers()
   
     res.status(203).json({
         status: 'success',
@@ -132,11 +176,17 @@ exports.modifier_quartier = catchAsync(async(req, res, next) => {
 
 exports.supprimer_quartier = catchAsync(async(req, res, next) => {
 
+    const quartierInfo = await models.Quartier.findByPk(req.params.id);
+
     const quartier = await models.Quartier.destroy({ where: { id: req.params.id } });
 
     if(!quartier){
        return next(new AppError('Invalid fields or No quartier found with this ID', 404));
     }
+
+    await trace.ajout_trace(req.user, `Supprimer le quartier ${quartierInfo.nom_fr}`);
+
+    await publishQuartiers()
 
     res.status(203).json({
         status: 'success',
@@ -169,3 +219,26 @@ exports.consulter_tous_les_quartiers_sans_projets = catchAsync(async (req, res, 
         gouvernorats
     });
 });
+
+exports.quartiersResolvers = {
+    Subscription: {
+        quartiers: {
+            subscribe: async (_,__,{id}) => {
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['QUARTIERS']);
+            }
+        }
+    }
+}

@@ -23,7 +23,7 @@ module.exports = {
         type: Sequelize.DOUBLE,
         defaultValue: 0
       },
-      surface_urbanisée_totale: {
+      surface_urbanisee_totale: {
         type: Sequelize.DOUBLE,
         defaultValue: 0
       },

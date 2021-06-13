@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DOUBLE,
       defaultValue: 0
     },
-    surface_urbanisée_totale: {
+    surface_urbanisee_totale: {
       type: DataTypes.DOUBLE,
       defaultValue: 0
     },
