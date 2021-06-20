@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       this.belongsTo(models.Infrastructure, {
+        as: 'infrastructure',
         foreignKey: 'infrastructure_id'
       });
     }
@@ -20,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
-    cout: {
+    quantite: {
       type: DataTypes.DOUBLE,
       allowNull: false
     }

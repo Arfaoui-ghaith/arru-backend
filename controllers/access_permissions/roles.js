@@ -7,17 +7,15 @@ const AppError = require('./../../utils/appError');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
-const recall = require('./../utils/recall');
-
 exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
 
     const roles = await models.Role.findAll({});
-    console.log('etape 1',roles)
+    
     if(roles.length == 0){
        return next(new AppError('No roles found.', 404));
     }
 
-    var roles_specifications_fonctionalites = []
+    /*var roles_specifications_fonctionalites = []
     for(const  role of roles){
         
         let obj = {id: role.id, titre: role.titre};
@@ -43,9 +41,9 @@ exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
         obj.specification = specification;
         obj.fonctionalites = fonctionalites;
         roles_specifications_fonctionalites.push(obj);  
-    }
+    }*/
     
-    pubsub.publish('ROLES', { roles: await recall.findAllRoles() });
+    //pubsub.publish('ROLES', { roles: await recall.findAllRoles() });
 
     res.status(200).json({
         status: 'success',

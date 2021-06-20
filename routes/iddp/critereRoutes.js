@@ -6,6 +6,9 @@ const authController = require('./../../controllers/access_permissions/authContr
 
 //router.use(authController.protect);
 
+router.route('/test_eligible')
+    .get(critereController.test_eligible);
+
 router.route('/')
     .get(critereController.consulter_tous_les_criteres)
     .post(critereController.ajout_critere);
@@ -13,8 +16,5 @@ router.route('/')
 router.route('/:id')
     .get(critereController.consulter_critere)
     .put(critereController.modifier_critere);
-
-router.route('/test_eligible')
-    .get(critereController.test_eligible);
     
 module.exports = router;

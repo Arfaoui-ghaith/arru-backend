@@ -3,6 +3,21 @@ const { v4: uuidv4 } = require('uuid');
 const trace = require('./../access_permissions/traces');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
+const publishDecomptes = catchAsync(async() => {
+    const decomptes = await models.Decompte.findAll({
+        include:[
+            { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt','updatedAt', 'projet_id'] },
+            include: { model: models.Projet, as: 'projet', attributes: { exclude: ['createdAt','updatedAt'] } } },
+            { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
+        ],
+        attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
+    });
+    pubsub.publish('DECOMPTES', { decomptes });
+});
+
 
 exports.consulter_tous_les_decomptes = catchAsync(async (req, res, next) => {
 
@@ -67,6 +82,8 @@ exports.ajout_decompte = catchAsync(async (req, res, next) => {
             ],
             attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
         });
+    
+    await publishDecomptes();
 
     await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompte.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
   
@@ -95,6 +112,8 @@ exports.modifier_decompte = catchAsync(async(req, res, next) => {
        return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
 
+    await publishDecomptes();
+
     await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
   
     res.status(203).json({
@@ -120,6 +139,8 @@ exports.supprimer_decompte = catchAsync(async(req, res, next) => {
     if(!decompte){
        return next(new AppError('Invalid fields or No decompte found with this ID', 404));
     }
+
+    await publishDecomptes();
   
     await trace.ajout_trace(req.user, `Supprimer le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
 
@@ -128,3 +149,27 @@ exports.supprimer_decompte = catchAsync(async(req, res, next) => {
     });
     
 });
+
+exports.decomptesResolvers = {
+    Subscription: {
+        decomptes: {
+            subscribe: async (_,__,{id}) => {
+
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['DECOMPTES']);
+            }
+        }
+    }
+}

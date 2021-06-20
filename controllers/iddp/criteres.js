@@ -99,6 +99,7 @@ exports.modifier_critere = catchAsync(async(req, res, next) => {
 });
 
 exports.test_eligible = catchAsync( async(req, res, next) => {
+    console.log('helloooo');
     const projets = await models.sequelize.query("SELECT DISTINCT(p.id) FROM projets as p, fiche_criteres as f, quartiers as q, communes as c, gouvernorats as g WHERE g.id = f.gouvernorat_id and g.id = c.gouvernorat_id and c.id = q.commune_id and q.projet_id = p.id and p.surface_totale >= f.surface_totale and p.surface_urbanisee_totale >= f.surface_urbanisee_totale and p.nombre_logements_totale >= f.nombre_logements_totale and p.nombre_habitants_totale >= f.nombre_habitants_totale and p.eligible = 0",
     {
         type: models.sequelize.QueryTypes.SELECT 
@@ -107,6 +108,8 @@ exports.test_eligible = catchAsync( async(req, res, next) => {
     if(!projets){
         return next(new AppError('No projets found', 404));
     }
+
+    console.log(projets);
 
     projets.map(async(projet) => {
         await models.Projet.update({ eligible: true },{ where: { id: projet.id } });

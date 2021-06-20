@@ -6,10 +6,10 @@ const fonctionalites_rolesController = require('./../../controllers/access_permi
 
 const authController = require('./../../controllers/access_permissions/authController');
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.route('/')
-    .get(authController.restrictTo("consulter les roles"), roleController.consulter_tous_les_roles)
+    .get(/*authController.restrictTo("consulter les roles"),*/ roleController.consulter_tous_les_roles)
     .post(authController.restrictTo('ajouter un role'), roleController.ajout_role);
 
 router.route('/:id')

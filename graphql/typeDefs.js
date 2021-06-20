@@ -28,10 +28,14 @@ type Specification {
     titre: String!
 }
 type Role {
-    id: String!
+    id: String
     titre: String
     specification: [Specification]
     fonctionalites: [Fonctionalite]
+}
+type RoleInfo {
+  id: String
+  role: Role
 }
 type User {
     id: String!
@@ -39,11 +43,17 @@ type User {
     prenom: String!
     cin: String!
     email: String!
+    telephone: String!
     password: String!
-    roles: [Role]
+    roles: [RoleInfo]
     createdAt: dateScalar
     updatedAt: dateScalar
     token: String
+}
+type Bailleur {
+  id: String!
+  nom: String!
+  image: String!
 }
 type Point {
   id: String!
@@ -121,7 +131,38 @@ type Projet {
   cout_etude: Float
   tranche: String
   quartiers: [Quartier]!
-  infrastructures: [Infrastructure]!
+  infrastructures: [Infrastructure]
+}
+type Financement {
+  id: String!
+  montant: Float!
+  type: String!
+  bailleur_fond: Bailleur
+}
+type Memoire {
+  id: String!
+  projet_id: String!
+  htva: Float!
+  montant_exonere: Float!
+  tva: Float!
+  gestion_frais_tva: Float!
+  frais_gestion: Float!
+  timbre_fiscale: Float!
+  financements: [Financement]!
+  projet: Projet
+}
+type Prestataire {
+  id: String!
+  nom: String!
+  abreviation: String!
+  decomptes: [Decompte]!
+}
+type Decompte {
+  id: String!
+  montant: Float!
+  date_paiement: dateScalar
+  memoire: Memoire
+  prestataire: Prestataire
 }
 type Query {
     utilisateurs: [User]!
@@ -137,4 +178,8 @@ type Subscription {
     quartiers: [Quartier]!
     criteres: [Fiche]!
     tranches: [Tranche]!
+    bailleurs: [Bailleur]!
+    memoires: [Memoire]!
+    decomptes: [Decompte]!
+    prestataires: [Prestataire]!
 }`

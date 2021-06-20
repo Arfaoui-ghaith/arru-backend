@@ -8,33 +8,37 @@ const bcrypt = require('bcryptjs');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
-const recall = require('./../utils/recall');
+const publishUtilisateurs = async() => {
+    let utilisateurs = await models.Utilisateur.findAll({
+        include: { model: models.Utilisateures_roles, as: 'roles',
+            attributes: ['id'],
+            include: { model: models.Role, as:'role', attributes: ['titre'] } 
+        }
+    });
+    
+    pubsub.publish('UTILISATEURS', { utilisateurs });
+}
 
 
 exports.consulter_tous_les_utilisateurs = catchAsync(async (req, res, next) => {
 
-    const utilisateurs = await models.Utilisateur.findAll({});
+    const utilisateurs = await models.Utilisateur.findAll({
+        include: { model: models.Utilisateures_roles, as: 'roles',
+            attributes: ['id'],
+            include: { model: models.Role, as:'role', attributes: ['titre'] } 
+        }
+    });
 
     if(!utilisateurs){
         return next(new AppError('No users found.', 404));
     }
-    var users = []
-    for(const user of utilisateurs) {
-        let obj = {id: user.id, nom: user.nom, prenom: user.prenom, cin: user.cin, email: user.email, image: user.image, telephone: user.telephone};
-        const roles = await models.sequelize.query("SELECT r.titre, (SELECT s.titre from `specifications` as s where ur.specification_id = s.id ) as specification FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
-        { 
-            replacements: { utilisateur: user.id },
-            type: models.sequelize.QueryTypes.SELECT 
-        });
+  
+    await publishUtilisateurs();
 
-        obj.roles = roles;
-        users.push(obj);
-    }
-    //pubsub.publish('UTILISATEURS', { utilisateurs: recall.findAllUsers() });
     res.status(200).json({
         status: 'success',
-        results: users.length,
-        utilisateurs: users
+        results: utilisateurs.length,
+        utilisateurs
     });
 });
 
@@ -88,12 +92,13 @@ exports.ajout_utilisateur = catchAsync(async (req, res, next) => {
 		}
 
         models.Utilisateures_roles.bulkCreate(relations).then(async () => {
-            pubsub.publish('UTILISATEURS', { utilisateurs: await recall.findAllUsers() });
+            await publishUtilisateurs();
 
             res.status(201).json({
                 status: 'success',
                 nouveau_utilisateur
             });
+            
         }).catch((err) => console.log(err));
     }else{
         return next(new AppError('User must have at least one role', 401));
@@ -227,42 +232,11 @@ exports.supprimer_utilisateur = catchAsync(async(req, res, next) => {
 });
 
 exports.utilisateurResolvers = {
-    Query: {
-      utilisateurs: async (_, __,{id}) => {
-        
-      try{
-        
-        const utilisateurs = await models.Utilisateur.findAll();
-
-        var users = [];
-        for( const user of utilisateurs ){
-
-          let obj = {id: user.id, nom: user.nom, prenom: user.prenom, cin: user.cin, email: user.email, image: user.image, telephone: user.telephone};
-          const roles = await models.sequelize.query("SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur",
-          { 
-              replacements: { utilisateur: id },
-              type: models.sequelize.QueryTypes.SELECT 
-          });
-
-          obj.roles = roles;
-          users.push(obj);
-
-        }
-        
-        return users;
-
-      }catch(error){
-        throw error
-      }
-
-    },
-      
-    },
     Subscription: {
         utilisateurs: {
             subscribe: async (_,__,{id}) => {
 
-                const roles = await models.sequelize.query(
+                /*const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
@@ -271,9 +245,9 @@ exports.utilisateurResolvers = {
                     }
                 );
         
-                if (roles.length == 0) {    
+                if (roles.length == 0) {
                        throw new AppError('You do not have permission to perform this action', 403);
-                }
+                }*/
 
                 return pubsub.asyncIterator(['UTILISATEURS']);
             }

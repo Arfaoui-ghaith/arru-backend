@@ -17,7 +17,7 @@ module.exports = {
         onDelete: 'cascade',
         onUpdate: 'cascade'
       },
-      cout: {
+      quantite: {
         type: Sequelize.DOUBLE,
         allowNull: false
       },

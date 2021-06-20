@@ -7,6 +7,10 @@ const quartiers = require('./../../controllers/iddp/quartiers');
 const gouvernorats = require('./../../controllers/iddp/gouvernorats');
 const criteres = require('./../../controllers/iddp/criteres');
 const tranches = require('./../../controllers/iddp/tranches');
+const bailleurs = require('./../../controllers/financement/bailleur_fonds');
+const memoires = require('./../../controllers/financement/memoires');
+const decomptes = require('./../../controllers/financement/decomptes');
+const prestataires = require('./../../controllers/financement/prestataires');
 
 module.exports = {
     Subscription: {
@@ -18,6 +22,10 @@ module.exports = {
         ...projets.projetResolvers.Subscription,
         ...quartiers.quartiersResolvers.Subscription,
         ...criteres.critereResolvers.Subscription,
-        ...tranches.trancheResolvers.Subscription
+        ...tranches.trancheResolvers.Subscription,
+        ...bailleurs.bailleursResolvers.Subscription,
+        ...memoires.memoiresResolvers.Subscription,
+        ...decomptes.decomptesResolvers.Subscription,
+        ...prestataires.prestatairesResolvers.Subscription
     }
 }

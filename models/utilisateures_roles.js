@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.belongsTo(models.Role, {
+        as: 'role',
         foreignKey: 'role_id'
       });
 

@@ -4,6 +4,24 @@ const trace = require('./../access_permissions/traces');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const { Op } = require("sequelize");
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
+
+const publishMemoires = catchAsync(async() => {
+    const memoires = await models.Memoire.findAll({
+        include:[
+            { model: models.Financement, as: 'financements', attributes: { exclude: ['createdAt','updatedAt','image'] },
+                include: { model: models.Bailleur_fonds, as: 'bailleur_fond', attributes: { exclude: ['createdAt','updatedAt','image'] } }
+            },
+            { model: models.Decompte, as: 'decompte', attributes: { exclude: ['createdAt','updatedAt','memoire_id','prestataire_id'] },
+                include: { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt','memoire_id'] } } 
+            },
+            { model: models.Projet, as: 'projet', attributes: { exclude: ['createdAt','updatedAt'] } }
+        ],
+        attributes: { exclude: ['createdAt','updatedAt'] }
+    });
+    pubsub.publish('MEMOIRES', { memoires });
+});
 
 exports.consulter_tous_les_memoires = catchAsync(async (req, res, next) => {
 
@@ -23,6 +41,8 @@ exports.consulter_tous_les_memoires = catchAsync(async (req, res, next) => {
     if(!memoires){
         return next(new AppError('No memoires found.', 404));
     }
+
+   
   
     res.status(200).json({
         status: 'success',
@@ -111,6 +131,8 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
 
     const projet = await models.Projet.findByPk(nouveau_memoire.projet_id);
 
+    await publishMemoires();
+
     await trace.ajout_trace(req.user, `Ajouter memoire pour le projet ${projet.code}`);
   
     res.status(201).json({
@@ -129,6 +151,8 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
     }
 
     const projet = await models.Projet.findByPk(memoire.projet_id);
+
+    await publishMemoires();
 
     await trace.ajout_trace(req.user, `Modifier memoire pour le projet ${projet.code}`);
   
@@ -150,6 +174,8 @@ exports.supprimer_memoire = catchAsync(async(req, res, next) => {
        return next(new AppError('Invalid fields or No memoire found with this ID', 404));
     }
 
+    await publishMemoires();
+    
     await trace.ajout_trace(req.user, `Supprimer memoire pour le projet ${memoireInfo.projet.code}`);
   
     res.status(203).json({
@@ -157,3 +183,27 @@ exports.supprimer_memoire = catchAsync(async(req, res, next) => {
     });
     
 });
+
+exports.memoiresResolvers = {
+    Subscription: {
+        memoires: {
+            subscribe: async (_,__,{id}) => {
+
+                /*const roles = await models.sequelize.query(
+                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
+                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
+                    { 
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        type: models.sequelize.QueryTypes.SELECT 
+                    }
+                );
+        
+                if (roles.length == 0) {    
+                       throw new AppError('You do not have permission to perform this action', 403);
+                }*/
+
+                return pubsub.asyncIterator(['MEMOIRES']);
+            }
+        }
+    }
+}

@@ -44,7 +44,7 @@ app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 app.use('/api/v1/traces', traceRouter);
 //iddp
-app.use('/api/v1/gouvernorats', gouvernoratRouter);
+app.use('/api/v1/gouvernorats__', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
