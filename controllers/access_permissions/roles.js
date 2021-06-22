@@ -15,7 +15,7 @@ exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
        return next(new AppError('No roles found.', 404));
     }
 
-    /*var roles_specifications_fonctionalites = []
+    var roles_specifications_fonctionalites = []
     for(const  role of roles){
         
         let obj = {id: role.id, titre: role.titre};
@@ -41,7 +41,7 @@ exports.consulter_tous_les_roles = catchAsync(async (req, res, next) => {
         obj.specification = specification;
         obj.fonctionalites = fonctionalites;
         roles_specifications_fonctionalites.push(obj);  
-    }*/
+    }
     
     //pubsub.publish('ROLES', { roles: await recall.findAllRoles() });
 
@@ -115,11 +115,11 @@ exports.ajout_role = catchAsync(async (req, res, next) => {
 exports.modifier_role = catchAsync(async(req, res, next) => {
 
     const role = await models.Role.update({...req.body.role}, { where: { id: req.params.id } });
-  
+    
     if(!role){
-       return next(new AppError('Invalid fields or No role found with this ID', 404));
+        return next(new AppError('Invalid fields or No role found with this ID', 404));
     }
-
+    
     console.log(role);
 
     if(req.body.relations.fonctionalites){

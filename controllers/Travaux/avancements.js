@@ -7,37 +7,32 @@ const trace = require('./../access_permissions/traces');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
-const publishprogress = catchAsync(async() => {
+/*const publishprogress = catchAsync(async() => {
     const progress = await models.progres.findAll({
         include: { model: models.Decompte, as: 'decomptes', attributes: { exclude: ['createdAt', 'updatedAt'] },
         include: { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt'] } } },
         attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] }
     });
     pubsub.publish('progresS', { progress });
-});
-
-exports.consulter_progres = catchAsync(async (req, res, next) => {
-
-    const progres = await models.progres.findByPk(req.params.id, {
-        include: { model: models.Decompte, as: 'decomptes', attributes: { exclude: ['createdAt', 'updatedAt'] },
-        include: { model: models.Memoire, as: 'memoire', attributes: { exclude: ['createdAt', 'updatedAt'] } } },
-        attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] }
-    });
-  
-    if(!progres){
-        return next(new AppError('No commune with this ID.',404));
-    }
-   
-    res.status(200).json({
-        status: 'success',
-        progres
-    });
-
-});
+});*/
 
 exports.ajout_progres = catchAsync(async (req, res, next) => {
 
-    const nouveau_progres = await models.progres.create({
+    const infra = await models.Infrastructure.findByPk(req.body.infrastructure_id,{
+        include: { model: models.Projet, as: 'projet' }
+    });
+
+    if(!infra){
+        return next(new AppError('No Infrastructure with this ID', 404));
+    }
+
+    const sum = await models.Progres.sum('quantite',{ where: { infrastructure_id: req.body.infrastructure_id } } );
+
+    /*if((sum + req.body.quantite) > infra.quantite){
+        return next(new AppError('this value out of range', 401));
+    }*/
+
+    const nouveau_progres = await models.Progres.create({
         id: uuidv4(),
         ...req.body
     });
@@ -46,9 +41,9 @@ exports.ajout_progres = catchAsync(async (req, res, next) => {
        return next(new AppError('Invalid fields or duplicate commune', 401));
     }
 
-    await publishprogress();
+    /*await publishProgress();*/
   
-    await trace.ajout_trace(req.user, `Ajouter le progres ${nouveau_progres.abreviation}`);
+    await trace.ajout_trace(req.user, `Ajouter avancement de ${nouveau_progres.quantite} de ${infra.type} pour le projet ${infra.projet.code}`);
 
     res.status(201).json({
         status: 'success',
@@ -91,27 +86,3 @@ exports.supprimer_progres = catchAsync(async(req, res, next) => {
     });
 
 });
-
-/*exports.progressResolvers = {
-    Subscription: {
-        progress: {
-            subscribe: async (_,__,{id}) => {
-
-                const roles = await models.sequelize.query(
-                    "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
-                    +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
-                    { 
-                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
-                        type: models.sequelize.QueryTypes.SELECT 
-                    }
-                );
-        
-                if (roles.length == 0) {    
-                       throw new AppError('You do not have permission to perform this action', 403);
-                }
-
-                return pubsub.asyncIterator(['PROGRES']);
-            }
-        }
-    }
-}*/

@@ -131,7 +131,7 @@ exports.critereResolvers = {
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
-                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        replacements: { utilisateur: id, fonctionalite: "consulter tous les criteres" },
                         type: models.sequelize.QueryTypes.SELECT 
                     }
                 );

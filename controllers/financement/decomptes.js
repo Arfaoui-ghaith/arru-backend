@@ -114,7 +114,7 @@ exports.modifier_decompte = catchAsync(async(req, res, next) => {
 
     await publishDecomptes();
 
-    await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
+    await trace.ajout_trace(req.user, `Ajouter le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompteInfo.memoire.projet.code}`);
   
     res.status(203).json({
         status: 'success',
@@ -132,7 +132,8 @@ exports.supprimer_decompte = catchAsync(async(req, res, next) => {
                 { model: models.Prestataire, as: 'prestataire', attributes: { exclude: ['createdAt','updatedAt'] } }
             ],
             attributes: { exclude: ['createdAt','updatedAt', 'prestataire_id', 'memoire_id'] }
-        });
+        }
+    );
 
     const decompte = await models.Decompte.destroy({ where: { id: req.params.id } });
   
@@ -142,7 +143,7 @@ exports.supprimer_decompte = catchAsync(async(req, res, next) => {
 
     await publishDecomptes();
   
-    await trace.ajout_trace(req.user, `Supprimer le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompte.memoire.projet.code}`);
+    await trace.ajout_trace(req.user, `Supprimer le decompte de la prestataire ${decompteInfo.prestataire.abreviation} pour le projet ${decompteInfo.memoire.projet.code}`);
 
     res.status(203).json({
         status: 'success',
@@ -155,18 +156,18 @@ exports.decomptesResolvers = {
         decomptes: {
             subscribe: async (_,__,{id}) => {
 
-                /*const roles = await models.sequelize.query(
+                const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
-                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        replacements: { utilisateur: id, fonctionalite: "consulter les bailleurs" },
                         type: models.sequelize.QueryTypes.SELECT 
                     }
                 );
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }*/
+                }
 
                 return pubsub.asyncIterator(['DECOMPTES']);
             }

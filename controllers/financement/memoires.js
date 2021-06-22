@@ -150,7 +150,10 @@ exports.modifier_Memoire = catchAsync(async(req, res, next) => {
        return next(new AppError('Invalid fields or No memoire found with this ID', 404));
     }
 
-    const projet = await models.Projet.findByPk(memoire.projet_id);
+    const memoireInfo = await models.Memoire.findByPk(req.params.id)
+    const projet = await models.Projet.findByPk(memoireInfo.projet_id);
+
+    console.log(projet);
 
     await publishMemoires();
 
@@ -189,18 +192,18 @@ exports.memoiresResolvers = {
         memoires: {
             subscribe: async (_,__,{id}) => {
 
-                /*const roles = await models.sequelize.query(
+                const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
-                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        replacements: { utilisateur: id, fonctionalite: "consulter les memoires" },
                         type: models.sequelize.QueryTypes.SELECT 
                     }
                 );
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }*/
+                }
 
                 return pubsub.asyncIterator(['MEMOIRES']);
             }

@@ -26,6 +26,7 @@ const memoireRouter = require('./routes/financement/memoireRoutes');
 const financementRouter = require('./routes/financement/financementRoutes');
 const decompteRouter = require('./routes/financement/decompteRoutes');
 const prestataireRouter = require('./routes/financement/prestataireRoutes');
+const avancementRouter = require('./routes/travaux/avancementRoutes');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 
@@ -44,7 +45,7 @@ app.use('/api/v1/roles_specifications', role_specificationRouter);
 app.use('/api/v1/utilisateurs_roles', utilisateur_roleRouter);
 app.use('/api/v1/traces', traceRouter);
 //iddp
-app.use('/api/v1/gouvernorats__', gouvernoratRouter);
+app.use('/api/v1/gouvernorats', gouvernoratRouter);
 app.use('/api/v1/communes', communeRouter);
 app.use('/api/v1/quartiers', quartierRouter);
 app.use('/api/v1/projets', projetRouter);
@@ -56,6 +57,7 @@ app.use('/api/v1/memoires', memoireRouter);
 app.use('/api/v1/financements', financementRouter);
 app.use('/api/v1/decomptes', decompteRouter);
 app.use('/api/v1/prestataires', prestataireRouter);
+app.use('/api/v1/avancements', avancementRouter);
 
 app.all('*', (req, res, next) => {
     if (req.originalUrl === "/graphql") return next();

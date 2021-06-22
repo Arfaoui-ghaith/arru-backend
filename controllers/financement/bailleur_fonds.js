@@ -19,8 +19,6 @@ exports.consulter_tous_les_bailleur_fonds = catchAsync(async (req, res, next) =>
        return next(new AppError('No bailleur_fonds found.', 404));
     }
 
-    
-  
     res.status(200).json({
         status: 'success',
         results: bailleur_fonds.length,
@@ -36,8 +34,6 @@ exports.consulter_bailleur_fond = catchAsync(async (req, res, next) => {
     if(!bailleur_fond){
       return next(new AppError('No bailleur_fond with this ID.',404));
     }
-
-    
    
     res.status(200).json({
       status: 'success',
@@ -98,7 +94,7 @@ exports.supprimer_bailleur_fond = catchAsync(async(req, res, next) => {
     }
 
     await publishBailleurs();
-    
+
     await trace.ajout_trace(req.user, `Supprimer le bailleur de fonds ${bailleur.nom}`);
   
     res.status(203).json({
@@ -112,18 +108,18 @@ exports.bailleursResolvers = {
         bailleurs: {
             subscribe: async (_,__,{id}) => {
 
-                /*const roles = await models.sequelize.query(
+                const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
-                        replacements: { utilisateur: id, fonctionalite: "consulter tous les utilisateurs" },
+                        replacements: { utilisateur: id, fonctionalite: "consulter les bailleurs" },
                         type: models.sequelize.QueryTypes.SELECT 
                     }
                 );
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }*/
+                }
 
                 return pubsub.asyncIterator(['BAILLEURS']);
             }

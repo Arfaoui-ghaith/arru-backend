@@ -4,15 +4,15 @@ const router = express.Router();
 const trancheController = require('../../controllers/iddp/tranches');
 const authController = require('./../../controllers/access_permissions/authController');
 
-//router.use(authController.protect);
+router.use(authController.protect);
 
 router.route('/')
-    .get(trancheController.consulter_tous_les_tranches)
-    .post(trancheController.ajout_tranche);
+    .get(authController.restrictTo('consulter les tranches'), trancheController.consulter_tous_les_tranches)
+    .post(authController.restrictTo('ajouter tranche'), trancheController.ajout_tranche);
 
 router.route('/:id')
     .get(trancheController.consulter_tranche)
-    .put(trancheController.modifier_tranche)
-    .delete(trancheController.supprimer_tranche);
+    .put(authController.restrictTo('modifier tranche'), trancheController.modifier_tranche)
+    .delete(authController.restrictTo('supprimer tranche'), trancheController.supprimer_tranche);
 
 module.exports = router;

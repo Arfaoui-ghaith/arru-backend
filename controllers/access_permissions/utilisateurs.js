@@ -236,7 +236,7 @@ exports.utilisateurResolvers = {
         utilisateurs: {
             subscribe: async (_,__,{id}) => {
 
-                /*const roles = await models.sequelize.query(
+                const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
@@ -247,7 +247,7 @@ exports.utilisateurResolvers = {
         
                 if (roles.length == 0) {
                        throw new AppError('You do not have permission to perform this action', 403);
-                }*/
+                }
 
                 return pubsub.asyncIterator(['UTILISATEURS']);
             }
