@@ -13,10 +13,10 @@ router.route('/login').post(authController.login);
 router.route('/forgotPassword').post(authController.forgotPassword);
 router.route('/resetPassword').post(authController.resetPassword);
 
-//router.use(authController.protect);
+router.use(authController.protect);
 
 router.route('/')
-    .get(/*authController.restrictTo('consulter les utilisateurs'),*/ utilisateurController.consulter_tous_les_utilisateurs)
+    .get(authController.restrictTo('consulter les utilisateurs'), utilisateurController.consulter_tous_les_utilisateurs)
     .post(authController.restrictTo('ajouter un utilisateur'), utilisateurController.ajout_utilisateur);
 
 router.route('/modifierProfile')

@@ -43,7 +43,7 @@ exports.ajout_trace = catchAsync(async(user,action) => {
     const trace = await models.Trace.create({ id: uuidv4(), utilisateur_id: user.id, action});
     console.log("hello",trace);
     if(!trace){
-        return next(new AppError('Invalid fields or duplicate user', 401));
+        return next(new AppError('Invalid fields or duplicate trace', 401));
     }
     const traces = await models.Trace.findAll({ include: { model: models.Utilisateur, as: 'utilisateur' } });
     pubsub.publish('TRACES', { traces });

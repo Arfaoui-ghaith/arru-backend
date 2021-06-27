@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
         hooks: true,
       });
+
+      
     }
   };
   Fonctionalité.init({

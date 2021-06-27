@@ -24,6 +24,14 @@ scalar dateScalar
 type Fonctionalite {
     titre: String!
 }
+type Interface {
+    titre: String!
+}
+type Notification {
+  message: String!
+  type: String!
+  interface: Interface
+}
 type Specification {
     titre: String!
 }
@@ -182,4 +190,5 @@ type Subscription {
     memoires: [Memoire]!
     decomptes: [Decompte]!
     prestataires: [Prestataire]!
+    notifications: [Notification]!
 }`

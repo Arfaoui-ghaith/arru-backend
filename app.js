@@ -13,6 +13,7 @@ const role_specificationRouter = require('./routes/access_permissions/roles_spec
 const utilisateur_roleRouter = require('./routes/access_permissions/utilisateur_roleRoutes');
 const interfaceRouter = require('./routes/access_permissions/interfacesRoutes');
 const traceRouter = require('./routes/access_permissions/traceRoutes');
+const notificationRouter = require('./routes/access_permissions/notificationRoutes');
 
 const gouvernoratRouter = require('./routes/iddp/gouvernoratRoutes');
 const communeRouter = require('./routes/iddp/communeRoutes');
@@ -34,6 +35,9 @@ app.use(compression());
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.static(`${__dirname}/storage`));
+
+app.use('/api/v1/notifications', notificationRouter);
+
 //permissions
 app.use('/api/v1/utilisateurs', utilisateurRouter);
 app.use('/api/v1/interfaces', interfaceRouter);

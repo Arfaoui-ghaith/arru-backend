@@ -153,8 +153,6 @@ exports.modifier_utilisateur = catchAsync(async(req, res, next) => {
 
 exports.modifier_profile = catchAsync(async(req, res, next) => {
 
-    console.log("in modifierr!!",req.file);
-
     if(req.file){
         if(req.file.filename) {
             req.body.image = req.file.filename;

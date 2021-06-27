@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'cascade',
         hooks: true,
       });
+
+      this.hasMany(models.Notification, {
+        as: 'notifications',
+        foreignKey: 'interface_id',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        hooks: true,
+      });
     }
   };
   Interface.init({

@@ -37,13 +37,6 @@ const sendErrorDev = (err, req, res) => {
       stack: err.stack,
     });
   }
-
-  // B) RENDERED WEBSITE
-  console.error('ERROR 💥', err);
-  return res.send(err.statusCode).render('error', {
-    title: 'Something went wrong!',
-    msg: err.message,
-  });
 };
 
 const handleSequelizeUniqueError = (error) => {

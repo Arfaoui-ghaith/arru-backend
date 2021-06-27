@@ -11,6 +11,7 @@ const bailleurs = require('./../../controllers/financement/bailleur_fonds');
 const memoires = require('./../../controllers/financement/memoires');
 const decomptes = require('./../../controllers/financement/decomptes');
 const prestataires = require('./../../controllers/financement/prestataires');
+const notifications = require('./../../controllers/access_permissions/notifications');
 
 module.exports = {
     Subscription: {
@@ -26,6 +27,7 @@ module.exports = {
         ...bailleurs.bailleursResolvers.Subscription,
         ...memoires.memoiresResolvers.Subscription,
         ...decomptes.decomptesResolvers.Subscription,
-        ...prestataires.prestatairesResolvers.Subscription
+        ...prestataires.prestatairesResolvers.Subscription,
+        ...notifications.notificationResolvers.Subscription
     }
 }

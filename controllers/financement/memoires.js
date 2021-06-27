@@ -133,6 +133,9 @@ exports.ajout_memoire = catchAsync(async (req, res, next) => {
 
     await publishMemoires();
 
+    const interface = await models.Interface.findOne({ where: { titre: 'gestion des decomptes' } });
+
+    await notification.ajout_notification(interface.id, "le direction IDDP faire le test de l'egibilité.","success");
     await trace.ajout_trace(req.user, `Ajouter memoire pour le projet ${projet.code}`);
   
     res.status(201).json({

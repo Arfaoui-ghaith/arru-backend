@@ -4,6 +4,7 @@ const codification = require('./../utils/codification');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const trace = require('./../access_permissions/traces');
+const notification = require('./../access_permissions/notifications');
 const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
@@ -115,6 +116,9 @@ exports.test_eligible = catchAsync( async(req, res, next) => {
         await models.Projet.update({ eligible: true },{ where: { id: projet.id } });
     });
 
+    const interface = await models.Interface.findOne({ where: { titre: 'gestion des memoires' } });
+
+    await notification.ajout_notification(interface.id, "le direction IDDP faire le test de l'egibilité.","success");
     await trace.ajout_trace(req.user, `Faire le test de l'egibilité`);
 
     res.status(203).json({
