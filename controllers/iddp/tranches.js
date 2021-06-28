@@ -27,7 +27,7 @@ exports.consulter_tous_les_tranches = catchAsync(async (req, res, next) => {
         include: { model: models.Projet, as: 'projets', attributes: { exclude: ['tranche_id', 'createdAt', 'updatedAt']},
             include: [
                 { model: models.Quartier, as: 'quartiers' },
-                { model: models.Infrastructure, as: 'infrastructures', include: { model: models.Progres, as: 'progres' } }
+                { model: models.Infrastructure, as: 'infrastructures', include: { model: models.Progres, as: 'progres', order: [['createdAt']] } }
             ]
         },
         attributes: { exclude: ['gouvernorat_id', 'createdAt', 'updatedAt'] },

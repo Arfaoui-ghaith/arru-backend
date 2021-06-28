@@ -28,7 +28,7 @@ exports.ajout_progres = catchAsync(async (req, res, next) => {
 
     const sum = await models.Progres.sum('quantite',{ where: { infrastructure_id: req.body.infrastructure_id } } );
 
-    if((sum + req.body.quantite) > infra.quantite){
+    if((infra.quantite - sum) < req.body.quantite){
         return next(new AppError('this value out of range', 401));
     }
 
