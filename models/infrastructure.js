@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Infrastructure.afterCreate( async(infra) => {
-    await sequelize.models.Progres.create({ id: uuidv4(), infrastructure_id: infra.id, cout: 0});
+    await sequelize.models.Progres.create({ id: uuidv4(), infrastructure_id: infra.id, quantite: 0, cout: 0});
   });
 
   return Infrastructure;

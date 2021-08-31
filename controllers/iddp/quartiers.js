@@ -9,7 +9,7 @@ const { PubSub } = require('graphql-subscriptions');
 const pubsub = new PubSub();
 
 const publishQuartiers = catchAsync(async() => {
-    const quartiers = await models.Quartier.findAll({
+    let quartiers = await models.Quartier.findAll({
         include:[
             { model: models.Point, as: 'center', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] } },
             { model: models.Point, as: 'latlngs', attributes: { exclude: ['updatedAt', 'quartier_id', 'id'] }, order: ['createdAt', 'ASC'], }
@@ -124,10 +124,12 @@ exports.ajout_quartier = catchAsync(async (req, res, next) => {
             await models.Point.create({ id: uuidv4(), quartier_id: nouveau_quartier.id, ...latlng });
         }
 
+        await publishQuartiers();
+
         await trace.ajout_trace(req.user, `Ajouter le quartier ${nouveau_quartier.nom_fr}`);
     });
 
-    await publishQuartiers()
+    //await publishQuartiers();
 
     res.status(201).json({
         status: 'success'
@@ -224,7 +226,7 @@ exports.quartiersResolvers = {
     Subscription: {
         quartiers: {
             subscribe: async (_,__,{id}) => {
-                const roles = await models.sequelize.query(
+                /*const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
@@ -235,7 +237,7 @@ exports.quartiersResolvers = {
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }
+                }*/
 
                 return pubsub.asyncIterator(['QUARTIERS']);
             }

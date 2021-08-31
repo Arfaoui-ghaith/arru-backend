@@ -174,14 +174,12 @@ exports.ajout_projet = catchAsync(async (req, res, next) => {
         return next(new AppError('Invalid fields or duplicate projet', 401));
     }
 
-    console.log(req.body.infrastructures);
-
     req.body.infrastructures.map(async (infra) => {
         console.log(await models.Infrastructure.create({
             id: uuidv4(),
             projet_id: nouveau_projet.id,
             code: codification.codeInfrastructure(nouveau_projet.code),
-            ...infra
+            ...infra,
         }));
     });
 
@@ -301,18 +299,19 @@ exports.projetResolvers = {
         projets: {
             subscribe: async (_,__,{id}) => {
 
-                const roles = await models.sequelize.query(
+                /*const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
                         replacements: { utilisateur: id, fonctionalite: "consulter les projets" },
                         type: models.sequelize.QueryTypes.SELECT 
+
                     }
                 );
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }
+                }*/
 
                 return pubsub.asyncIterator(['PROJETS']);
             }

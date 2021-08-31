@@ -4,20 +4,23 @@
     "password": "68MHLV3BYt",
     "database": "0wtu9oz5Sx",
     "host": "37.59.55.185",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "logging": false
   },
   "test": {
-    "username": "abdfxjrk_test",
-    "password": "141!7Lik1DMh",
-    "database": "abdfxjrk_test",
-    "host": "212.129.49.175",
-    "dialect": "mysql"
+    "username": "0wtu9oz5Sx",
+    "password": "68MHLV3BYt",
+    "database": "0wtu9oz5Sx",
+    "host": "37.59.55.185",
+    "dialect": "mysql",
+    "logging": false
   },
   "production": {
-    "username": "wHzk6Pc8ny",
-    "password": "iblMvoUhLb",
-    "database": "wHzk6Pc8ny",
+    "username": "0wtu9oz5Sx",
+    "password": "68MHLV3BYt",
+    "database": "0wtu9oz5Sx",
     "host": "37.59.55.185",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "logging": false
   }
 }

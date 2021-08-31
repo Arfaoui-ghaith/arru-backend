@@ -41,7 +41,7 @@ exports.consulter_tous_les_traces_par_utilisateur = catchAsync(async (req, res, 
 
 exports.ajout_trace = catchAsync(async(user,action) => {
     const trace = await models.Trace.create({ id: uuidv4(), utilisateur_id: user.id, action});
-    console.log("hello",trace);
+
     if(!trace){
         return next(new AppError('Invalid fields or duplicate trace', 401));
     }

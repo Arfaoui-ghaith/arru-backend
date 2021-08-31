@@ -132,6 +132,8 @@ exports.ajout_commune = catchAsync(async (req, res, next) => {
 
 exports.modifier_commune = catchAsync(async(req, res, next) => {
 
+    const communeInfo = await models.Commune.findByPk(req.params.id);
+
     const commune = await models.Commune.update(req.body, { where: { id: req.params.id } });
   
     if(!commune){
@@ -140,7 +142,7 @@ exports.modifier_commune = catchAsync(async(req, res, next) => {
 
     await publishCommunes();
 
-    await trace.ajout_trace(req.user, `Modifier la commune ${commune.nom_fr}`);
+    await trace.ajout_trace(req.user, `Modifier la commune ${communeInfo.nom_fr}`);
   
     res.status(203).json({
         status: 'success',
@@ -173,7 +175,7 @@ exports.communeResolvers = {
         communes: {
             subscribe: async (_,__,{id}) => {
 
-                const roles = await models.sequelize.query(
+                /*const roles = await models.sequelize.query(
                     "SELECT r.titre FROM `roles` as r, `utilisateures_roles` as ur, `roles_fonctionalités` as rf, `fonctionalités` as f "
                     +"WHERE r.id = ur.role_id AND ur.utilisateur_id = :utilisateur AND r.id = rf.role_id AND rf.fonctionalite_id = f.id AND f.titre = :fonctionalite",
                     { 
@@ -184,7 +186,7 @@ exports.communeResolvers = {
         
                 if (roles.length == 0) {    
                        throw new AppError('You do not have permission to perform this action', 403);
-                }
+                }*/
 
                 return pubsub.asyncIterator(['COMMUNES']);
             }
