@@ -1,25 +1,25 @@
 {
   "development": {
-    "username": "0wtu9oz5Sx",
-    "password": "68MHLV3BYt",
-    "database": "0wtu9oz5Sx",
-    "host": "37.59.55.185",
+    "username": "freedb_ghaith",
+    "password": "qu9d?$F!DN!AvAf",
+    "database": "freedb_0wtu9oz5Sx",
+    "host": "sql.freedb.tech",
     "dialect": "mysql",
     "logging": false
   },
   "test": {
-    "username": "0wtu9oz5Sx",
-    "password": "68MHLV3BYt",
-    "database": "0wtu9oz5Sx",
-    "host": "37.59.55.185",
+    "username": "freedb_ghaith",
+    "password": "qu9d?$F!DN!AvAf",
+    "database": "freedb_0wtu9oz5Sx",
+    "host": "sql.freedb.tech",
     "dialect": "mysql",
     "logging": false
   },
   "production": {
-    "username": "0wtu9oz5Sx",
-    "password": "68MHLV3BYt",
-    "database": "0wtu9oz5Sx",
-    "host": "37.59.55.185",
+    "username": "freedb_ghaith",
+    "password": "qu9d?$F!DN!AvAf",
+    "database": "freedb_0wtu9oz5Sx",
+    "host": "sql.freedb.tech",
     "dialect": "mysql",
     "logging": false
   }
